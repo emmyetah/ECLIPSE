@@ -1,0 +1,13 @@
+# Visual Studio / VS Code
+.vs/
+.vscode/
+
+# Build output
+out/
+build/
+bin/
+obj/
+
+# OS junk
+Thumbs.db
+.DS_Store
