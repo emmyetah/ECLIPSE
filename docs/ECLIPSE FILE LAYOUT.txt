@@ -1,0 +1,73 @@
+ECLIPSE/
+│
+├── docs/                          # Documentation & planning
+│   ├── N1254885_PPD.pdf           # Your project planning document
+│   ├── Official_ECLIPSE_Plan.docx # Your detailed timeline
+│   ├── architecture_diagram.png   # System architecture diagram
+│   ├── requirements.md            # Functional & non-functional requirements
+│   └── references.md              # Sources, datasheets, ISO standards
+│
+├── firmware/                      # Embedded code for ESP32 Feather
+│   ├── src/
+│   │   ├── main.cpp               # Core loop: sensor acquisition, serial output
+│   │   ├── sensors/               # Individual sensor modules
+│   │   │   ├── BME680.cpp/.h
+│   │   │   ├── SCD30.cpp/.h
+│   │   │   └── SEN0168.cpp/.h
+│   │   ├── utils/
+│   │   │   ├── Logger.cpp/.h      # Lightweight serial logger
+│   │   │   └── Config.cpp/.h      # YAML config reader
+│   ├── include/                   # Headers (if separated)
+│   ├── lib/                       # Custom or third-party libraries
+│   ├── config.yaml                # Sampling rates, thresholds, etc.
+│   └── platformio.ini             # (If using PlatformIO) or Arduino project file
+│
+├── software/                      # Desktop application (C++/Qt/ImGUI)
+│   ├── src/
+│   │   ├── main.cpp               # Entry point
+│   │   ├── gui/
+│   │   │   ├── Dashboard.cpp/.h   # GUI rendering logic
+│   │   │   ├── Alerts.cpp/.h
+│   │   │   └── Graphs.cpp/.h
+│   │   ├── db/
+│   │   │   ├── Database.cpp/.h    # SQLite handler
+│   │   │   └── schema.sql
+│   │   ├── core/
+│   │   │   ├── SensorManager.cpp/.h
+│   │   │   ├── DataProcessor.cpp/.h
+│   │   │   └── AlertManager.cpp/.h
+│   │   └── utils/
+│   │       ├── CSVWriter.cpp/.h
+│   │       └── Logger.cpp/.h
+│   ├── assets/
+│   │   ├── icons/
+│   │   └── ui_mockups/
+│   ├── data/
+│   │   ├── logs/                  # Generated CSV or SQLite data
+│   │   └── simulation/            # Scenario files for test data
+│   ├── tests/                     # Unit & performance tests
+│   ├── build/                     # Compiled binaries
+│   └── CMakeLists.txt
+│
+├── analysis/                      # Python-based post-processing
+│   ├── notebooks/
+│   │   ├── latency_analysis.ipynb
+│   │   ├── accuracy_eval.ipynb
+│   ├── scripts/
+│   │   └── plot_graphs.py
+│   └── results/
+│       └── latency_report.csv
+│
+├── simulation/                    # Mock environment scenarios
+│   ├── scenario_space.csv
+│   ├── scenario_aircraft.csv
+│   └── generator.py
+│
+├── tests/                         # End-to-end and stress testing
+│   ├── unit/
+│   ├── integration/
+│   └── stress/
+│
+├── .gitignore                     # Ignore binaries, build/, logs/, etc.
+├── README.md                      # Project overview + setup instructions
+└── LICENSE                        # (optional)
