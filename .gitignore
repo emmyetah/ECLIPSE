@@ -1,6 +1,8 @@
 # Visual Studio / VS Code
 .vs/
+**/.vs/
 .vscode/
+'ECLIPSE NOTES.txt'
 
 # Build output
 out/
@@ -11,3 +13,13 @@ obj/
 # OS junk
 Thumbs.db
 .DS_Store
+
+
+*.suo
+*.user
+*.user.*
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+build-*/
+out/

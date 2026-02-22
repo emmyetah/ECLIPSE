@@ -1,0 +1,12 @@
+ECLIPSE NOTES
+
+
+takes readings from sensors
+sends them to a gui/ui
+
+- maps them into exportable excel spreadsheets for graphical data
+- 
+
+login page
+setup page
+mission dashboard (with export log button and generate report button)
