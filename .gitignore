@@ -23,3 +23,6 @@ CMakeCache.txt
 cmake-build-*/
 build-*/
 out/
+
+# Ignore Arduino libraries
+firmware/esp32/ECLIPSE_ESP32/libraries/
