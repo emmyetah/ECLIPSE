@@ -25,4 +25,4 @@ build-*/
 out/
 
 # Ignore Arduino libraries
-firmware/esp32/ECLIPSE_ESP32/libraries/
+firmware/ECLIPSE_ESP32/libraries/

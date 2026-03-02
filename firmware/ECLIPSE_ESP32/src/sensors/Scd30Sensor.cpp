@@ -1,8 +1,8 @@
 #include "Scd30Sensor.h"
 
-bool Scd30Sensor::begin(TwoWire& wire) {
+bool Scd30Sensor::begin(TwoWire& wire, uint8_t addr) {
 
-    if (!_scd30.begin(&wire)) {
+    if (!_scd30.begin(0x61, &wire)) {
         return false;
     }
 

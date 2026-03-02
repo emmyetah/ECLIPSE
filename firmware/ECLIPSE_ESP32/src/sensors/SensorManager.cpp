@@ -10,7 +10,7 @@ bool SensorManager::begin() {
     //put & to avoid overwriting failure state. preserves failure state if somehting goes worng
     //- Professional embeded pattern.
     ok &= _bme680.begin(Wire, 0x77);
-    ok &= _scd30.begin(Wire); // address not reuqired because scd30 has fixed address of 61
+    ok &= _scd30.begin(Wire, 0x61);
     // will add radiation sensor here 
 
     return ok;

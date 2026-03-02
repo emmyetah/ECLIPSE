@@ -15,7 +15,7 @@ struct Scd30Reading {
 
 class Scd30Sensor {
 public:
-    bool begin(TwoWire& wire = Wire);
+    bool begin(TwoWire& wire, uint8_t addr = 0x61);
     Scd30Reading read();
 
 private:
