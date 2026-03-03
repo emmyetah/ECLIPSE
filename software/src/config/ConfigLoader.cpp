@@ -53,6 +53,30 @@ namespace eclipse {
 
         //Sim telemetry - same idea
         setDouble(kv, "telemetry.sim.updateHz", res.config.telemetry.sim.updateHz, res.warnings);
+        //Base simulated values
+        setDouble(kv, "telemetry.sim.bmeTempC", res.config.telemetry.sim.bmeTempC, res.warnings);
+        setDouble(kv, "telemetry.sim.bmeRhPct", res.config.telemetry.sim.bmeRhPct, res.warnings);
+        setDouble(kv, "telemetry.sim.bmePressureHpa", res.config.telemetry.sim.bmePressureHpa, res.warnings);
+
+        setDouble(kv, "telemetry.sim.scdCo2Ppm", res.config.telemetry.sim.scdCo2Ppm, res.warnings);
+        setDouble(kv, "telemetry.sim.scdTempC", res.config.telemetry.sim.scdTempC, res.warnings);
+        setDouble(kv, "telemetry.sim.scdRhPct", res.config.telemetry.sim.scdRhPct, res.warnings);
+
+        setDouble(kv, "telemetry.sim.radCpm", res.config.telemetry.sim.radCpm, res.warnings);
+
+        //Noise control
+        setDouble(kv, "telemetry.sim.noiseStd", res.config.telemetry.sim.noiseStd, res.warnings);
+        {
+            //added for space / sim config.
+            uint32_t spikes = res.config.telemetry.sim.enableSpikes ? 1u : 0u;
+            setUInt(kv, "telemetry.sim.enableSpikes", spikes, res.warnings);
+            res.config.telemetry.sim.enableSpikes = (spikes != 0u);
+        }
+
+        setDouble(kv, "telemetry.sim.spikeChance", res.config.telemetry.sim.spikeChance, res.warnings);
+        setDouble(kv, "telemetry.sim.co2SpikePpm", res.config.telemetry.sim.co2SpikePpm, res.warnings);
+        setDouble(kv, "telemetry.sim.radSpikeCpm", res.config.telemetry.sim.radSpikeCpm, res.warnings);
+
 
         //Threshold loader (helper lambda)
         auto loadBand = [&](const std::string& prefix, ThresholdBand& band) {

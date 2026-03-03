@@ -47,6 +47,8 @@ namespace eclipse::io
         std::normal_distribution<double> _noise{ 0.0, 0.15 };
 
         // helpers
+        
+        double noise();
         //ensures values stay in physicak bounds.
         static double clamp(double v, double lo, double hi);
         static std::string formatCsv(

@@ -22,6 +22,26 @@ namespace eclipse {
     //controls sim behaviour, may expand later
     struct SimTelemetryConfig {
         double updateHz = 2.0; //generated fake telemtry twice per second
+
+        //Base simulated sensor values (used as starting point)
+        double bmeTempC = 22.0;
+        double bmeRhPct = 45.0;
+        double bmePressureHpa = 1013.25;
+
+        double scdCo2Ppm = 420.0;
+        double scdTempC = 22.2;
+        double scdRhPct = 44.5;
+
+        double radCpm = 12.0;
+
+        //how jittery the sim looks (Gaussian noise std dev)
+        double noiseStd = 0.15;
+
+        //space mode (spikiness controls)
+        bool enableSpikes = true;     //if false -> smooth sim only
+        double spikeChance = 0.05;    //5% chance per tick
+        double co2SpikePpm = 800.0;   //add-on spike size
+        double radSpikeCpm = 80.0;    //add-on spike size
     };
 
     //bundles everything about telemtry into one object
