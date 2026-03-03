@@ -27,6 +27,11 @@ namespace eclipse::io
         //returns a line if available, otherwise std::nullopt
         std::optional<std::string> pollLine();
 
+        //need a deconstructor otherwise will leak as I have a raw pointer.
+        ~SerialTelemetrySource();
+        SerialTelemetrySource(const SerialTelemetrySource&) = delete;
+        SerialTelemetrySource& operator=(const SerialTelemetrySource&) = delete;
+
     private:
         //configuration for serial telemetry
         SerialTelemetryConfig _cfg;
