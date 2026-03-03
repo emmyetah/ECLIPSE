@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace telemetry {
+namespace eclipse::telemetry {
 
     // Unique identifier for each telemetry metric in the system
  
@@ -10,23 +10,17 @@ namespace telemetry {
         invalid = 0,
 
         // Environmental
-        temperature,
-        pressure,
-        humidity,
+        TempC = 1,
+        HumidityRH = 2,
+        PressureHpa = 3,
 
         // Atmosphere / life support
-        co2,
-        oxygen,
+        CO2ppm = 4,
 
         // Radiation
-        radiation,
-
-        // System / power (optional / future)
-        battery_level,
-        power_consumption,
-
-        // Sentinel value (not a real metric)
-        count
+        RadiationCpm = 5,
+        // Sentinel value (not a real metric) 
+        Count = 6 //number of enum entries
     };
 
 }

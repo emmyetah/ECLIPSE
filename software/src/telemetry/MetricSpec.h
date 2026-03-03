@@ -6,7 +6,7 @@
 #include "MetricId.h"
 #include "../core/types/Units.h"
 
-namespace telemetry {
+namespace eclipse::telemetry {
 
     // Static metadata describing how a metric should be displayed/interpreted.
     struct MetricSpec {
@@ -25,8 +25,8 @@ namespace telemetry {
 
         // Expected bounds for UI normalisation (progress bars, chart ranges).
         // =they are display bounds.
-        double expectedMin = 0.0;
-        double expectedMax = 0.0;
+        double displayMin = 0.0;
+        double displaydMax = 0.0;
 
         // Optional: UI ordering / grouping (helps build KPI rows cleanly).
         // Lower numbers appear earlier.
