@@ -26,7 +26,7 @@ namespace eclipse::telemetry {
         // Expected bounds for UI normalisation (progress bars, chart ranges).
         // =they are display bounds.
         double displayMin = 0.0;
-        double displaydMax = 0.0;
+        double displayMax = 0.0;
 
         // Optional: UI ordering / grouping (helps build KPI rows cleanly).
         // Lower numbers appear earlier.

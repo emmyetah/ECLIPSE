@@ -10,17 +10,21 @@ namespace eclipse::telemetry {
         invalid = 0,
 
         // Environmental
-        TempC = 1,
-        HumidityRH = 2,
-        PressureHpa = 3,
+        TempC_BME680,
+        TempC_SCD30,
+        TempC,
+        HumidityRH_BME680,
+        HumidityRH_SCD30,
+        HumidityRH,
+        PressureHpa,
 
         // Atmosphere / life support
-        CO2ppm = 4,
+        CO2ppm,
 
         // Radiation
-        RadiationCpm = 5,
+        RadiationCpm,
         // Sentinel value (not a real metric) 
-        Count = 6 //number of enum entries
+        Count //number of enum entries
     };
 
 }

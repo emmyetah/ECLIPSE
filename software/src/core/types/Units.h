@@ -27,7 +27,9 @@ namespace core::units {
         ppb,           // parts per billion
 
         // Radiation
-        microsievert_per_hour, // uSv/h
+        microsievert_per_hour,// uSv/h
+        cpm, //counts per minute
+        cps, //counts per second
 
         // Electrical / power (not needed but added in case of expansion)
         volt,
