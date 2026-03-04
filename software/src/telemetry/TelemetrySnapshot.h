@@ -8,7 +8,7 @@
 #include "TelemetrySample.h"
 #include "../core/types/Time.h"
 
-namespace telemetry {
+namespace eclipse::telemetry {
 
     // Holds the latest known state for a single metric.
     struct MetricState {
@@ -49,7 +49,7 @@ namespace telemetry {
             return static_cast<std::size_t>(id);
         }
 
-        std::array<MetricState, static_cast<std::size_t>(MetricId::count)> states_{};
+        std::array<MetricState, static_cast<std::size_t>(MetricId::Count)> states_{};
         std::optional<core::time::TimePoint> lastAnyUpdate_{};
     };
 
