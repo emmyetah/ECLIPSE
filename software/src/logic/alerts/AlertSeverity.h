@@ -8,13 +8,10 @@ namespace eclipse::logic::alerts {
     enum class AlertSeverity : uint8_t {
         Unknown = 0, // Severity not determined
 
-        //System alerts
-        Sensor, //for sensor-down alerts
+        Information, //e.g., Mode switch
 
-        //hazard alerts fr thresholds
-        Caution,     //close to hitting threshold
-        Warning,     //hit threshold but not severyly (depending on the metric. If radiaiotn hit threshold, immediate warning)
-        Critical     //dangerous condition, gone way past the threshold.
+        Warning,     //abnormal but not critical
+        Critical     //dangerous condition, requiring attention
     };
 
 } 
