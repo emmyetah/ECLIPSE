@@ -11,7 +11,7 @@ namespace eclipse::logic::alerts {
 
         //most importanrt
         ThresholdBreach,   //metric exceeded configured threshold
-
+        SensorStale,       //sensor has stopped updating.
         SensorOffline,     //sensor disconnected or not responding
         SensorMismatch,    //sensor fusion logic shows defference too large   
         SystemHealth,      //low battery or multipe warnings combine
