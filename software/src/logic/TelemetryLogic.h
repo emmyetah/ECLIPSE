@@ -62,6 +62,14 @@ namespace eclipse::logic {
         //clears all stored alerts
         void ClearAlerts();
 
+        //checks for the idex an alert in the alerts table, and sets the state as acknowledged
+        void AcknowledgeAlert(std::size_t index);
+
+        //removes all alerts with state = cleared
+        void PurgeClearedAlerts();
+
+        
+
     private:
         //returns the threshold set matching the current mode
         const thresholds::ThresholdSet& ActiveThresholdSet() const;
@@ -80,6 +88,9 @@ namespace eclipse::logic {
 
         //adds an alert if it is not a duplicate
         void PushAlert(const alerts::Alert& alert);
+
+        //checks if any active alerts are no longer needed and changes their state to cleared
+        void MarkClearedAlerts();
 
     private:
         mode::Mode mode_ = mode::Mode::Earth; //current system mode

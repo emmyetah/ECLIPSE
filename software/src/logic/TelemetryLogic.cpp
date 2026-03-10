@@ -58,6 +58,9 @@ namespace eclipse::logic {
 
         //evaluate sensor and system health
         EvaluateHealth(snapshot, now);
+
+        //mark alerts that are no longer valid
+        MarkClearedAlerts();
     }
 
     thresholds::ThresholdLevel TelemetryLogic::GetThresholdLevel(telemetry::MetricId metric) const
@@ -93,6 +96,56 @@ namespace eclipse::logic {
     void TelemetryLogic::ClearAlerts()
     {
         alerts_.clear();
+    }
+
+    void TelemetryLogic::AcknowledgeAlert(std::size_t index)
+    {   
+        //check if index is valid first
+        if (index >= alerts_.size())
+            return;
+        //checks that the state is active first, then changes it.
+        if (alerts_[index].state == alerts::AlertState::Active)
+            alerts_[index].state = alerts::AlertState::Acknowledged;
+    }
+
+    void TelemetryLogic::MarkClearedAlerts()
+    {
+        for (auto& alert : alerts_)
+        {
+            //only active or acknowledged alerts can become cleared
+            if (alert.state == alerts::AlertState::Active ||
+                alert.state == alerts::AlertState::Acknowledged)
+            {
+                if (alert.metric.has_value())
+                {
+                    auto metric = *alert.metric;
+
+                    //if the metric is now normal or caution, the alert condition is gone
+                    auto level = levels_[static_cast<std::size_t>(metric)];
+
+                    if (level == thresholds::ThresholdLevel::Normal ||
+                        level == thresholds::ThresholdLevel::Caution)
+                    {
+                        alert.state = alerts::AlertState::Cleared;
+                    }
+                }
+            }
+        }
+    }
+
+    void TelemetryLogic::PurgeClearedAlerts()
+    {
+        alerts_.erase(
+            std::remove_if(
+                alerts_.begin(),
+                alerts_.end(),
+                [](const alerts::Alert& alert)
+                {
+                    return alert.state == alerts::AlertState::Cleared;
+                }
+            ),
+            alerts_.end()
+        );
     }
 
     const thresholds::ThresholdSet& TelemetryLogic::ActiveThresholdSet() const
