@@ -88,8 +88,8 @@ namespace eclipse::logic {
         thresholds::ThresholdSet spaceThresholds_; //rules for Space mode
 
         //latest threshold level per metric
-        std::array<thresholds::ThresholdLevel,
-            static_cast<std::size_t>(telemetry::MetricId::Count)> levels_{};
+        std::array<thresholds::ThresholdLevel, 
+        static_cast<std::size_t>(telemetry::MetricId::Count)> levels_{};
 
         health::SensorStatus bme680Status_ = health::SensorStatus::Unknown;
         health::SensorStatus scd30Status_ = health::SensorStatus::Unknown;
