@@ -2634,7 +2634,7 @@ border: 1px solid rgba(255, 255, 255, 40);</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_13">
                  <item>
-                  <widget class="QFrame" name="graphTitleAndMetricFrame">
+                  <widget class="QFrame" name="graphDetailFrame">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -2876,7 +2876,7 @@ QPushButton:pressed {
                    <property name="frameShadow">
                     <enum>QFrame::Raised</enum>
                    </property>
-                   <widget class="QWidget" name="graphWidget" native="true">
+                   <widget class="QWidget" name="trendChartContainer" native="true">
                     <property name="geometry">
                      <rect>
                       <x>19</x>

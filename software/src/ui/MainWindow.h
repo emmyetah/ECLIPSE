@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtCharts/QChartView>
+#include <QtCharts/QChart>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,5 +21,14 @@ public:
 
 private:
     Ui::MainWindow* ui;
+    //for trend plot graph
+    QChart* trendChart_ = nullptr;
+    QChartView* trendChartView_ = nullptr;
+    QLineSeries* trendSeries_ = nullptr;
+    QValueAxis* trendAxisX_ = nullptr;
+    QValueAxis* trendAxisY_ = nullptr;
+
+    void SetupTrendChart();
+    void LoadTestTrendData();
 };
 #endif // MAINWINDOW_H

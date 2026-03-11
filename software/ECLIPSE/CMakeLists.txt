@@ -11,12 +11,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 set(PROJECT_SOURCES
         main.cpp
-        src/ui/MainWindow.cpp
-        src/ui/MainWindow.h
-        src/ui/MainWindow.ui
+        ../src/ui/MainWindow.cpp
+        ../src/ui/MainWindow.h
+        ../src/ui/MainWindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -43,6 +44,7 @@ else()
 endif()
 
 target_link_libraries(ECLIPSE PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(ECLIPSE PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts)
 
 set_target_properties(ECLIPSE PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
