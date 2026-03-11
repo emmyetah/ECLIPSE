@@ -15,11 +15,34 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 set(PROJECT_SOURCES
         main.cpp
+         ../src/ui/MainWindow.h
         ../src/ui/MainWindow.cpp
-        ../src/ui/MainWindow.h
         ../src/ui/MainWindow.ui
+
         ../src/ui/widgets/TrendPltWidget.h
         ../src/ui/widgets/TrendPltWidget.cpp
+        ../src/ui/widgets/KpiCardWidget.h
+        ../src/ui/widgets/KpiCardWidget.cpp
+
+        ../src/viewmodel/KpiCardVm.h
+        ../src/viewmodel/KpiCardVm.cpp
+        ../src/viewmodel/TrendPltVm.h
+        ../src/viewmodel/TrendPltVm.cpp
+        ../src/viewmodel/DashboardVm.h
+        ../src/viewmodel/DashboardVm.cpp
+
+        ../src/logic/TelemetryLogic.h
+        ../src/logic/TelemetryLogic.cpp
+
+        ../src/io/serial/SerialTelemetrySource.h
+        ../src/io/serial/SerialTelemetrySource.cpp
+        ../src/io/sim/SimTelemetrySource.h
+        ../src/io/sim/SimTelemetrySource.cpp
+
+        ../src/telemetry/TelemetrySnapshot.h
+        ../src/telemetry/TelemetrySnapshot.cpp
+
+        ../src/io/parsing/TelemetryParser.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

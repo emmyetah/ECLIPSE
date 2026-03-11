@@ -2979,7 +2979,7 @@ border:none;</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_12">
               <property name="topMargin">
-               <number>16</number>
+               <number>0</number>
               </property>
               <property name="bottomMargin">
                <number>25</number>

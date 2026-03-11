@@ -62,21 +62,6 @@ namespace eclipse::viewmodel {
         return radiationCard_;
     }
 
-    const KpiCardVm& DashboardVm::GetBmeTempCard() const {
-        return bmeTempCard_;
-    }
-
-    const KpiCardVm& DashboardVm::GetScd30TempCard() const {
-        return scd30TempCard_;
-    }
-
-    const KpiCardVm& DashboardVm::GetBmeHumidityCard() const {
-        return bmeHumidityCard_;
-    }
-
-    const KpiCardVm& DashboardVm::GetScd30HumidityCard() const {
-        return scd30HumidityCard_;
-    }
 
     //Trend plot
 

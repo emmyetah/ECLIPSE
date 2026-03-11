@@ -21,8 +21,10 @@ namespace eclipse::ui::widgets {
         QLabel* maxLabel,
         QLabel* statusLabel,
         QLabel* timestampLabel,
-        QSlider* indicatorSlider
-    ) {
+        QSlider* indicatorSlider,
+        QFrame* topStatusBar
+        topStatusBar_ = topStatusBar;
+    ){
         metricLabel_ = metricLabel;
         valueLabel_ = valueLabel;
         minLabel_ = minLabel;
@@ -122,7 +124,7 @@ namespace eclipse::ui::widgets {
 
     void KpiCardWidget::ApplyLevelStyle(eclipse::logic::thresholds::ThresholdLevel level)
     {
-        if (statusLabel_ == nullptr || indicatorSlider_ == nullptr || topStatusBar == nullptr) {
+        if (statusLabel_ == nullptr || indicatorSlider_ == nullptr || topStatusBar_ == nullptr) {
             return;
         }
 

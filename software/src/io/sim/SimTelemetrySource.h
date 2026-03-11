@@ -6,7 +6,7 @@
 #include <chrono>
 #include <random>
 
-#include "../config/Config.h"   // SimTelemetryConfig (adjust include path if yours differs)
+#include "../../config/Config.h"   // SimTelemetryConfig (adjust include path if yours differs)
 
 namespace eclipse::io
 {

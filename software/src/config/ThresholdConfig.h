@@ -95,12 +95,12 @@ namespace eclipse {
         ThresholdBand radiationCpm; //haven't got rad detector yet, might do cps instead
 
         //setting deafult values for eath and space. 
-        static ThresholdConfig defaults(EnvironmentProfile profile) {
+        static ThresholdConfig defaults(EnvironmentProfile profile = EnvironmentProfile::Earth) {
             ThresholdConfig cfg;
             switch (profile) {
                 case EnvironmentProfile::Earth:{
                     //Standard indoor habitable building thresholds based on csv open source dataset for iot
-                    cfg.temperatureC = ThresholdBand::Range(18.5, 18.0, 27.5.0, 28.0);
+                    cfg.temperatureC = ThresholdBand::Range(18.5, 18.0, 27.5, 28.0);
                     cfg.humidityRH = ThresholdBand::Range(32.0, 30.0, 68.0, 70.0);
                     cfg.pressureHpa = ThresholdBand::Range(950.0, 900.0, 1050.0, 1100.0);
                     cfg.co2Ppm = ThresholdBand::HighOnly(970.0, 1000.0);

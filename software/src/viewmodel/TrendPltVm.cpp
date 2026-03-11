@@ -1,4 +1,4 @@
-#include "TrendPlotVm.h"
+#include "TrendPltVm.h"
 
 #include "../telemetry/MetricSpec.h"
 

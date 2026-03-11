@@ -13,7 +13,7 @@
 #include "../logic/health/SensorStatus.h"
 
 #include "KpiCardVm.h"
-#include "TrendPlotVm.h"
+#include "TrendPltVm.h"
 
 namespace eclipse::viewmodel {
 
