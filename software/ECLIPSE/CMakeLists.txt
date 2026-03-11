@@ -18,6 +18,8 @@ set(PROJECT_SOURCES
         ../src/ui/MainWindow.cpp
         ../src/ui/MainWindow.h
         ../src/ui/MainWindow.ui
+        ../src/ui/widgets/TrendPltWidget.h
+        ../src/ui/widgets/TrendPltWidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

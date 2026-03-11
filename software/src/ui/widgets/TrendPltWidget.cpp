@@ -1,4 +1,4 @@
-#include "TrendPlotWidget.h"
+#include "TrendPltWidget.h"
 
 #include <QVBoxLayout>
 #include <QPainter>
@@ -30,7 +30,9 @@ void TrendPlotWidget::BuildUi()
     chartView_ = new QChartView(this);
     chartView_->setRenderHint(QPainter::Antialiasing, true);
     chartView_->setFrameShape(QFrame::NoFrame);
-    chartView_->setStyleSheet("background: transparent; border: none;");
+    chartView_->setStyleSheet("background-color: rgb(28, 31, 36); border: none;");
+    setMinimumSize(900, 230);
+    setMaximumHeight(250);
 
     mainLayout->addWidget(chartView_);
     setLayout(mainLayout);
@@ -38,8 +40,8 @@ void TrendPlotWidget::BuildUi()
 
 void TrendPlotWidget::SetupChart()
 {
-    series_ = new QtCharts::QLineSeries();
-    chart_ = new QtCharts::QChart();
+    series_ = new QLineSeries();
+    chart_ = new QChart();
 
     chart_->addSeries(series_);
     chart_->legend()->hide();
@@ -50,15 +52,15 @@ void TrendPlotWidget::SetupChart()
 
 void TrendPlotWidget::SetupAxes()
 {
-    axisX_ = new QtCharts::QValueAxis();
-    axisY_ = new QtCharts::QValueAxis();
+    axisX_ = new QValueAxis();
+    axisY_ = new QValueAxis();
 
     axisX_->setTitleText("Samples");
     axisX_->setLabelFormat("%d");
     axisX_->setTickCount(6);
     axisX_->setRange(0, 10);
 
-    axisY_->setTitleText("Value");
+    axisY_->setTitleText("Temperature(°C)");
     axisY_->setLabelFormat("%.1f");
     axisY_->setTickCount(6);
     axisY_->setRange(0.0, 100.0);
@@ -75,9 +77,9 @@ void TrendPlotWidget::ApplyChartStyle()
     chart_->setBackgroundVisible(true);
     chart_->setBackgroundRoundness(12);
     chart_->setPlotAreaBackgroundVisible(false);
-    chart_->setMargins(QMargins(16, 16, 16, 16));
+    chart_->setMargins(QMargins(4, 4, 4, 4));
 
-    QBrush chartBackground(QColor("#171D27"));
+    QBrush chartBackground(QColor("#1C1F24"));
     chart_->setBackgroundBrush(chartBackground);
 
     QFont titleFont;
@@ -202,6 +204,6 @@ void TrendPlotWidget::UpdateAxisRanges()
         padding = std::max(1.0, std::abs(minValue) * 0.1);
     }
 
-    axisX_->setRange(0, std::max(1, data_.size() - 1));
+    axisX_->setRange(0, static_cast<int>(std::max<qsizetype>(1, data_.size() - 1)));
     axisY_->setRange(minValue - padding, maxValue + padding);
 }

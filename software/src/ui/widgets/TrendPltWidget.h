@@ -32,11 +32,11 @@ private:
     void UpdateAxisRanges();
 
 private:
-    QtCharts::QChart* chart_;
-    QtCharts::QChartView* chartView_;
-    QtCharts::QLineSeries* series_;
-    QtCharts::QValueAxis* axisX_;
-    QtCharts::QValueAxis* axisY_;
+    QChart* chart_;
+    QChartView* chartView_;
+    QLineSeries* series_;
+    QValueAxis* axisX_;
+    QValueAxis* axisY_;
 
     QVector<double> data_;
 };
