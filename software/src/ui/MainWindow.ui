@@ -71,7 +71,7 @@ layoutTopMargin: 0;
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-157</y>
+         <y>0</y>
          <width>1440</width>
          <height>1103</height>
         </rect>
@@ -142,8 +142,8 @@ border:none;</string>
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="3">
-               <widget class="QPushButton" name="liveSensorsPushButton">
+              <item row="0" column="1">
+               <widget class="QPushButton" name="earthModePushButton">
                 <property name="minimumSize">
                  <size>
                   <width>150</width>
@@ -153,7 +153,7 @@ border:none;</string>
                 <property name="maximumSize">
                  <size>
                   <width>150</width>
-                  <height>40</height>
+                  <height>50</height>
                  </size>
                 </property>
                 <property name="styleSheet">
@@ -174,7 +174,7 @@ QPushButton:pressed {
 }</string>
                 </property>
                 <property name="text">
-                 <string>LIVE SENSORS</string>
+                 <string>EARTH MODE</string>
                 </property>
                </widget>
               </item>
@@ -211,42 +211,6 @@ QPushButton:pressed {
                 </property>
                 <property name="text">
                  <string>SPACE CAPSULE</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QPushButton" name="earthModePushButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>150</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>150</width>
-                  <height>50</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    background-color: rgb(15, 17, 19);   
-    color: white;
-    border-radius: 8px;
-    padding: 6px 12px;
-}
-
-QPushButton:hover {
-    background-color: rgb(40, 44, 50); 
-}
-
-QPushButton:pressed {
-    background-color: rgb(136, 197, 228); 
-    color: rgb(15,17,19);
-}</string>
-                </property>
-                <property name="text">
-                 <string>EARTH MODE</string>
                 </property>
                </widget>
               </item>
@@ -844,13 +808,13 @@ border-bottom-spacing: 10px;</string>
                    <property name="minimumSize">
                     <size>
                      <width>200</width>
-                     <height>0</height>
+                     <height>200</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>300</height>
                     </size>
                    </property>
                    <property name="autoFillBackground">
@@ -922,6 +886,9 @@ background:transparent;</string>
                        <enum>QFrame::Raised</enum>
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <item>
                         <widget class="QLabel" name="tempKpiLabel">
                          <property name="maximumSize">
@@ -962,22 +929,155 @@ border: none;</string>
                          </property>
                         </widget>
                        </item>
-                       <item>
+                       <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
                         <widget class="QWidget" name="tempThreshBar" native="true">
-                         <property name="maximumSize">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
                           <size>
-                           <width>180</width>
+                           <width>0</width>
                            <height>35</height>
                           </size>
                          </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QFrame" name="tempStatusFrame">
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
-                           <height>35</height>
+                           <height>55</height>
+                          </size>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_19">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>15</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="tempSlider">
+                            <property name="minimumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QSlider::groove:horizontal {
+    background: #252B31;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #57C785;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+    border: 2px solid #111315;
+}</string>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="value">
+                             <number>60</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QFrame" name="tempMinMaxFrame">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>15</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_12">
+                             <property name="spacing">
+                              <number>40</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="tempMin">
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>min: 18</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="tempMax">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:26c</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item alignment="Qt::AlignBottom">
+                        <widget class="QFrame" name="tempStatusFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>180</width>
+                           <height>15</height>
                           </size>
                          </property>
                          <property name="frameShape">
@@ -987,6 +1087,21 @@ border: none;</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_6">
+                          <property name="spacing">
+                           <number>50</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="tempStatusLabel">
                             <property name="minimumSize">
@@ -1049,7 +1164,7 @@ border: none;</string>
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>300</height>
                     </size>
                    </property>
                    <property name="styleSheet">
@@ -1074,7 +1189,7 @@ background: qlineargradient(
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_6">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>7</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1108,6 +1223,12 @@ background: qlineargradient(
                     </item>
                     <item>
                      <widget class="QFrame" name="humidityKpiFrame">
+                      <property name="maximumSize">
+                       <size>
+                        <width>198</width>
+                        <height>201</height>
+                       </size>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">border:none;
 background:transparent;</string>
@@ -1119,6 +1240,9 @@ background:transparent;</string>
                        <enum>QFrame::Raised</enum>
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_4">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <item>
                         <widget class="QLabel" name="humidityKpiLabel">
                          <property name="maximumSize">
@@ -1162,25 +1286,167 @@ background:transparent;</string>
                          </property>
                         </widget>
                        </item>
-                       <item>
+                       <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                         <widget class="QWidget" name="humidityThreshBar" native="true">
-                         <property name="maximumSize">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
                           <size>
-                           <width>180</width>
+                           <width>0</width>
                            <height>35</height>
                           </size>
                          </property>
-                         <property name="styleSheet">
-                          <string notr="true">border:none;</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QFrame" name="humidityStatusFrame">
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
-                           <height>35</height>
+                           <height>55</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true"/>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_20">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>15</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="humiditySlider">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QSlider::groove:horizontal {
+    background: #252B31;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #57C785;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+    border: 2px solid #111315;
+}</string>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="value">
+                             <number>50</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item alignment="Qt::AlignVCenter">
+                           <widget class="QFrame" name="humidityMinMaxFrame">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_16">
+                             <property name="spacing">
+                              <number>40</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="humidityMin">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>15</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:30</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="humidityMax">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:30</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item alignment="Qt::AlignBottom">
+                        <widget class="QFrame" name="humidityStatusFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>180</width>
+                           <height>20</height>
                           </size>
                          </property>
                          <property name="font">
@@ -1198,6 +1464,21 @@ background:transparent;</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_7">
+                          <property name="spacing">
+                           <number>50</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="humidityStatusLabel">
                             <property name="font">
@@ -1236,7 +1517,7 @@ background:transparent;</string>
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>300</height>
                     </size>
                    </property>
                    <property name="styleSheet">
@@ -1262,7 +1543,7 @@ background: qlineargradient(
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_9">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>7</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1294,6 +1575,18 @@ background: qlineargradient(
                     </item>
                     <item>
                      <widget class="QFrame" name="pressureKpiFrame">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>201</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>201</height>
+                       </size>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">border:none;
 background:transparent;</string>
@@ -1305,6 +1598,9 @@ background:transparent;</string>
                        <enum>QFrame::Raised</enum>
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_7">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <item>
                         <widget class="QLabel" name="pressureKpiLabel">
                          <property name="maximumSize">
@@ -1341,22 +1637,174 @@ background:transparent;</string>
                          </property>
                         </widget>
                        </item>
-                       <item>
+                       <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                         <widget class="QWidget" name="pressureThreshBar" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>55</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
                            <height>35</height>
                           </size>
                          </property>
+                         <property name="styleSheet">
+                          <string notr="true">QSlider::groove:horizontal {
+    background: #252B31;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #57C785;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+    border: 2px solid #111315;
+}
+</string>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_21">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>15</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="pressureSlider">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="value">
+                             <number>86</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QFrame" name="pressureMinMaxFrame">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_17">
+                             <property name="spacing">
+                              <number>40</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="pressureMin">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>15</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>min:40</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="pressureMax">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>15</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:50</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                        <item>
                         <widget class="QFrame" name="pressureStatusFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>165</width>
+                           <height>20</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
-                           <width>180</width>
-                           <height>35</height>
+                           <width>165</width>
+                           <height>20</height>
                           </size>
                          </property>
                          <property name="frameShape">
@@ -1366,6 +1814,21 @@ background:transparent;</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_8">
+                          <property name="spacing">
+                           <number>50</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="pressureStatusLabel">
                             <property name="font">
@@ -1404,7 +1867,7 @@ background:transparent;</string>
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>300</height>
                     </size>
                    </property>
                    <property name="styleSheet">
@@ -1430,7 +1893,7 @@ background: qlineargradient(
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_10">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>7</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1464,6 +1927,18 @@ background: qlineargradient(
                     </item>
                     <item>
                      <widget class="QFrame" name="co2KpiFrame">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>201</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>201</height>
+                       </size>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">border:none;
 background:transparent;</string>
@@ -1475,6 +1950,9 @@ background:transparent;</string>
                        <enum>QFrame::Raised</enum>
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_8">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <item>
                         <widget class="QLabel" name="co2KpiLabel">
                          <property name="maximumSize">
@@ -1511,22 +1989,146 @@ background:transparent;</string>
                          </property>
                         </widget>
                        </item>
-                       <item>
+                       <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                         <widget class="QWidget" name="co2ThreshBar" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>55</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
                            <height>35</height>
                           </size>
                          </property>
+                         <property name="styleSheet">
+                          <string notr="true">QSlider::groove:horizontal {
+    background: #252B31;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #57C785;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+    border: 2px solid #111315;
+}</string>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_22">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>15</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="co2Slider">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QFrame" name="co2MinMaxFrame">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_18">
+                             <property name="spacing">
+                              <number>40</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="co2Min">
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>min:20</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="co2Max">
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:45</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                        <item>
                         <widget class="QFrame" name="co2StatusFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>20</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
-                           <height>35</height>
+                           <height>20</height>
                           </size>
                          </property>
                          <property name="frameShape">
@@ -1536,6 +2138,21 @@ background:transparent;</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_9">
+                          <property name="spacing">
+                           <number>50</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="co2StatusLabel">
                             <property name="font">
@@ -1574,7 +2191,7 @@ background:transparent;</string>
                    <property name="maximumSize">
                     <size>
                      <width>200</width>
-                     <height>200</height>
+                     <height>300</height>
                     </size>
                    </property>
                    <property name="styleSheet">
@@ -1600,7 +2217,7 @@ background: qlineargradient(
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_11">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>7</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1634,6 +2251,18 @@ background: qlineargradient(
                     </item>
                     <item>
                      <widget class="QFrame" name="radiationKpiFrame">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>201</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>201</height>
+                       </size>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">border:none;
 background:transparent;</string>
@@ -1645,6 +2274,9 @@ background:transparent;</string>
                        <enum>QFrame::Raised</enum>
                       </property>
                       <layout class="QVBoxLayout" name="verticalLayout_14">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
                        <item>
                         <widget class="QLabel" name="radiationKpiLabel">
                          <property name="maximumSize">
@@ -1681,22 +2313,167 @@ background:transparent;</string>
                          </property>
                         </widget>
                        </item>
-                       <item>
+                       <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                         <widget class="QWidget" name="radiationThreshBar" native="true">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>55</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
                            <height>35</height>
                           </size>
                          </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_23">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>15</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="radiationSlider">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>154</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QSlider::groove:horizontal {
+    background: #252B31;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #57C785;
+    width: 14px;
+    height: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+    border: 2px solid #111315;
+}</string>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="value">
+                             <number>23</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QFrame" name="radiationMinMaxFrame">
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="frameShape">
+                             <enum>QFrame::StyledPanel</enum>
+                            </property>
+                            <property name="frameShadow">
+                             <enum>QFrame::Raised</enum>
+                            </property>
+                            <layout class="QHBoxLayout" name="horizontalLayout_19">
+                             <property name="spacing">
+                              <number>40</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <item>
+                              <widget class="QLabel" name="label_13">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>min:20</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_14">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>0</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>16777215</width>
+                                 <height>9</height>
+                                </size>
+                               </property>
+                               <property name="font">
+                                <font>
+                                 <pointsize>7</pointsize>
+                                </font>
+                               </property>
+                               <property name="styleSheet">
+                                <string notr="true">color: #6E737B;</string>
+                               </property>
+                               <property name="text">
+                                <string>max:40</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                        <item>
                         <widget class="QFrame" name="radiationStatusFrame">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>20</height>
+                          </size>
+                         </property>
                          <property name="maximumSize">
                           <size>
                            <width>180</width>
-                           <height>35</height>
+                           <height>20</height>
                           </size>
                          </property>
                          <property name="frameShape">
@@ -1706,6 +2483,21 @@ background:transparent;</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_10">
+                          <property name="spacing">
+                           <number>50</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QLabel" name="radiationStatusLabel">
                             <property name="font">
@@ -2468,8 +3260,6 @@ QTableWidget {
      </widget>
     </item>
    </layout>
-   <zorder>scrollArea</zorder>
-   <zorder>footerFrame</zorder>
   </widget>
  </widget>
  <resources/>

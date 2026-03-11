@@ -59,7 +59,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(26, 26, 26);
+      <string notr="true">background-color: rgb(20, 22, 26);
 border:none;</string>
      </property>
      <property name="frameShape">
@@ -313,8 +313,7 @@ QPushButton#closeButton:hover {
    <item>
     <widget class="QFrame" name="detailsFrame">
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(20, 20, 20);
-border:none;
+      <string notr="true">background-color: rgb(28, 31, 36);
 
 QFrame#metricRow{border-bottom: 1px solid #23272D}
 QFrame#messageRow,
@@ -333,7 +332,7 @@ QFrame#valueRow {
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <property name="spacing">
-       <number>2</number>
+       <number>4</number>
       </property>
       <property name="leftMargin">
        <number>28</number>
@@ -634,16 +633,16 @@ QFrame#valueRow {
        </widget>
       </item>
      </layout>
-     <zorder>messageFrame</zorder>
-     <zorder>valueRow</zorder>
      <zorder>severityRow</zorder>
+     <zorder>valueRow</zorder>
+     <zorder>messageFrame</zorder>
      <zorder>metricRow</zorder>
     </widget>
    </item>
    <item>
     <widget class="QFrame" name="buttonBar">
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(26, 26, 26);
+      <string notr="true">background-color: rgb(20, 22, 26);
 border:none;</string>
      </property>
      <property name="frameShape">
@@ -712,7 +711,7 @@ QPushButton#acknowledgeButton:hover {
         <property name="styleSheet">
          <string notr="true">QPushButton#viewAlertsButton {
     
-	background-color: rgb(26, 26, 26);
+	background-color: rgb(20, 22, 26);
     color: #8C9198;
     border: 1px solid #31363D;
     border-radius: 12px;
