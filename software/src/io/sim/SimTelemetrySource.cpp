@@ -79,11 +79,11 @@ namespace eclipse::io
         const double bmeRh = clamp(_cfg.bmeRhPct + (noise() * 2.0), 0.0, 100.0); //larger jitter, clamp between physical bounds, 0 and 100
         const double bmePressureHpa = clamp(_cfg.bmePressureHpa + (noise() * 1.5), 900.0, 1100.0); //clamping pressure and adding more noise
 
-        const double scdCo2Ppm = clamp(_cfg.scdCo2Ppm + (noise() * 10.0), 350.0, 5000.0); //preasure fluctuates more noticeablly
+        double scdCo2Ppm = clamp(_cfg.scdCo2Ppm + (noise() * 10.0), 350.0, 5000.0); //preasure fluctuates more noticeablly
         const double scdTempC = _cfg.scdTempC + noise(); //same again for temp, small jitter
         const double scdRh = clamp(_cfg.scdRhPct + (noise() * 2.0), 0.0, 100.0);
 
-        const int64_t radCpm = static_cast<int64_t>(clamp(_cfg.radCpm + (noise() * 3.0), 0.0, 5000.0));
+        int64_t radCpm = static_cast<int64_t>(clamp(_cfg.radCpm + (noise() * 3.0), 0.0, 5000.0));
 
         //Apply “space mode” spikes
         if (_cfg.enableSpikes) {
