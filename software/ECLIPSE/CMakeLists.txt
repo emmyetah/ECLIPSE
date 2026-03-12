@@ -12,6 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets SerialPort)
+
+
 
 set(PROJECT_SOURCES
         main.cpp
@@ -70,6 +73,7 @@ endif()
 
 target_link_libraries(ECLIPSE PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(ECLIPSE PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts)
+target_link_libraries(ECLIPSE PRIVATE Qt6::Core Qt6::Widgets Qt6::SerialPort)
 
 set_target_properties(ECLIPSE PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
