@@ -9,10 +9,6 @@ namespace eclipse::viewmodel {
         pressureCard_(telemetry::MetricId::PressureHpa),
         co2Card_(telemetry::MetricId::CO2ppm),
         radiationCard_(telemetry::MetricId::RadiationCpm),
-        bmeTempCard_(telemetry::MetricId::TempC_BME680),
-        scd30TempCard_(telemetry::MetricId::TempC_SCD30),
-        bmeHumidityCard_(telemetry::MetricId::HumidityRH_BME680),
-        scd30HumidityCard_(telemetry::MetricId::HumidityRH_SCD30),
         trendPlot_(telemetry::MetricId::TempC)
     {
     }

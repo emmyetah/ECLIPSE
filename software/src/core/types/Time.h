@@ -11,8 +11,9 @@ namespace core::time {
 
     // System clock for logs
     using SystemClock = std::chrono::system_clock;
-
     using TimePoint = SteadyClock::time_point;
+
+    using Duration = SteadyClock::duration;
 
     // Time units
     using Milliseconds = std::chrono::milliseconds;

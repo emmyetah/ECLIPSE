@@ -327,7 +327,7 @@ namespace eclipse::logic {
         const core::time::TimePoint& now
     ) {
         //setting stale after time: if no new results in 5+ seconds then sensor is stale.
-        const auto staleAfter = std::chrono::seconds(5);
+        const core::time::Duration staleAfter = std::chrono::seconds(5);
 
         bme680Status_ = health::SensorHealthMonitor::EvaluateBME680(
             snapshot,
