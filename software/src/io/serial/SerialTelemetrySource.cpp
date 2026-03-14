@@ -55,17 +55,35 @@ namespace eclipse::io
         _impl->port.setFlowControl(QSerialPort::NoFlowControl);
 
         //ReadOnly is enough for telemetry input
-        const bool ok = _impl->port.open(QIODevice::ReadOnly);
+        _impl->rxBuffer.clear();//Clear any old buffered bytes on open
+        const bool ok = _impl->port.open(QIODevice::ReadWrite);
+        
+        
         qDebug() << "QSerialPort open ok:" << ok;
         qDebug() << "QSerialPort error:" << _impl->port.errorString();
 
         if (ok) {
-            _impl->port.setDataTerminalReady(true); //setting DTR
+            _impl->port.setDataTerminalReady(true);
             _impl->port.setRequestToSend(false);
-        }
-        //Clear any old buffered bytes on open
-        _impl->rxBuffer.clear();
 
+            qDebug() << "Port readable:" << _impl->port.isReadable();
+            qDebug() << "Port writable:" << _impl->port.isWritable();
+            qDebug() << "DTR now:" << _impl->port.isDataTerminalReady();
+            qDebug() << "RTS now:" << _impl->port.isRequestToSend();
+            qDebug() << "Bytes available after open:" << _impl->port.bytesAvailable();
+
+            qDebug() << "Waiting up to 3000 ms for first bytes...";
+            const bool ready = _impl->port.waitForReadyRead(3000);
+            qDebug() << "waitForReadyRead result:" << ready;
+            qDebug() << "Bytes available after wait:" << _impl->port.bytesAvailable();
+
+            if (_impl->port.bytesAvailable() > 0) {
+                const QByteArray firstChunk = _impl->port.readAll();
+                qDebug() << "Immediate raw bytes after wait:" << firstChunk;
+                _impl->rxBuffer.append(firstChunk);
+            }
+        }
+        
         return ok;
     }
 
@@ -88,42 +106,41 @@ namespace eclipse::io
     //turns a stream of raw serial bytes into one clean complee telemetry CSV line.
     std::optional<std::string> SerialTelemetrySource::pollLine()
     {
-        //checks if port is open. If not open, no line to read.
         if (!isOpen()) {
             qDebug() << "Serial port is not open";
             return std::nullopt;
         }
 
-        //no blocking, reading what is available now.
+        // If we do not already have a full line buffered, wait briefly for more data.
+        if (_impl->rxBuffer.indexOf('\n') < 0 && _impl->port.bytesAvailable() == 0) {
+            const bool ready = _impl->port.waitForReadyRead(300);
+            qDebug() << "waitForReadyRead in pollLine:" << ready;
+        }
+
+        qDebug() << "Bytes available before readAll:" << _impl->port.bytesAvailable();
+
         const QByteArray chunk = _impl->port.readAll();
 
         qDebug() << "Bytes read this tick:" << chunk.size();
         if (!chunk.isEmpty()) {
             qDebug() << "Chunk raw:" << chunk;
-        }
-        //if there is nothing to read append new bytes to buffer
-        if (!chunk.isEmpty()) {
             _impl->rxBuffer.append(chunk);
         }
 
-        //Look for a newline in the buffer
         const int nl = _impl->rxBuffer.indexOf('\n');
-        //if position of new line is less than 0 return nullopt (object that doesn't contian a value)
         if (nl < 0) {
             qDebug() << "No newline found yet";
-            return std::nullopt; // no complete line yet
+            return std::nullopt;
         }
 
-        //extract one full line (up to '\n')
         QByteArray lineBytes = _impl->rxBuffer.left(nl);
-        _impl->rxBuffer.remove(0, nl + 1); //+1 to remove '\n'
+        _impl->rxBuffer.remove(0, nl + 1);
 
-        //Handle Windows-style "\r\n"
         if (!lineBytes.isEmpty() && lineBytes.endsWith('\r')) {
             lineBytes.chop(1);
         }
+
         qDebug() << "Complete line extracted:" << lineBytes;
-        //Convert to std::string
         return lineBytes.toStdString();
     }
 }

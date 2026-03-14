@@ -55,7 +55,7 @@ namespace eclipse {
     struct AppConfig {
         //General
         std::string appName = "ECLIPSE";
-        uint32_t samplePeriodMs = 1000; //how often i process telemetry 
+        uint32_t samplePeriodMs = 2200; //how often i process telemetry 
 
         //Telemetry ( nested config)
         TelemetryConfig telemetry;

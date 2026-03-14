@@ -104,8 +104,6 @@ void MainWindow::PollTelemetry()
 
     auto parsed = parser_.parseLine(*line);
 
-    //debug
-  qDebug() << "PollTelemetry tick";
 
     if (line.has_value())
         qDebug() << "Line:" << QString::fromStdString(*line);
@@ -117,17 +115,19 @@ void MainWindow::PollTelemetry()
     else
         qDebug() << "Parser rejected line";
 
-    qDebug() << "Pressure value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::PressureHpa).has_value();
-    qDebug() << "CO2 value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::CO2ppm).has_value();
-    qDebug() << "Radiation value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::RadiationCpm).has_value();
-
+   
     if (!parsed)
         return;
 
     for (const auto& sample : *parsed)
     {
         snapshot_.Apply(sample);
-    }
+    } 
+    
+    qDebug() << "Pressure value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::PressureHpa).has_value();
+    qDebug() << "CO2 value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::CO2ppm).has_value();
+    qDebug() << "Radiation value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::RadiationCpm).has_value();
+
 
     auto now = std::chrono::steady_clock::now();
     logic_.Update(snapshot_, now);

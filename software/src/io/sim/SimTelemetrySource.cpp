@@ -1,4 +1,4 @@
-// SimTelemetrySource.cpp
+
 #include "SimTelemetrySource.h"
 
 #include <sstream>
