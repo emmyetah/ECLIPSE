@@ -21,10 +21,10 @@ namespace core::format {
         // If set, overrides default decimals for the value.
         std::optional<int> decimalsOverride = std::nullopt;
 
-        // Append a unit  (e.g. "23.40 °C"). If false, just the number (e.g. "23.40").
+        // Append a unit  (e.g. "23.40 C"). If false, just the number (e.g. "23.40").
         bool includeUnit = true;
 
-        // Add a space before the unit symbol ("23.4 °C") vs ("23.4°C").
+        // Add a space before the unit symbol ("23.4 C") vs ("23.4C").
         bool spaceBeforeUnit = true;
 
         // If true, trims trailing zeros for decimals (e.g. 2.50 -> "2.5", 2.00 -> "2").
@@ -43,7 +43,7 @@ namespace core::format {
     //possibly need to add stoi() or stod() function, but not practical
 
     // Format a numeric value with an associated unit (symbol appended by default).
-    // Example: value=23.4, unit=celsius -> "23.4 °C"
+    // Example: value=23.4, unit=celsius -> "23.4 C"
     std::string Value(std::optional<double> value, core::units::Unit unit, const FormatSpec& spec = {});
 
     // -------- Time formatting --------

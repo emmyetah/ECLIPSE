@@ -5,7 +5,7 @@
 namespace eclipse::logic::fusion {
 
     //gets both temp values from the most recent snapshot and returns these values + the max difference.
-    SensorFusion::FusionResult SensorFusion::FuseTemperature(
+    FusionResult SensorFusion::FuseTemperature(
         const telemetry::TelemetrySnapshot& snapshot,
         double maxDifference // max difference was hardcoded as 1 in sensorFusion.h. could add this to the configuration.
     ) {
@@ -16,7 +16,7 @@ namespace eclipse::logic::fusion {
     }
 
     //gets both humidity values from the most recent snapshot & returns these values + the max difference
-    SensorFusion::FusionResult SensorFusion::FuseHumidity(
+    FusionResult SensorFusion::FuseHumidity(
         const telemetry::TelemetrySnapshot& snapshot,
         double maxDifference
     ) {
@@ -26,7 +26,7 @@ namespace eclipse::logic::fusion {
         return FusePair(bme, scd, maxDifference);
     }
 
-    SensorFusion::FusionResult SensorFusion::FusePair(
+    FusionResult SensorFusion::FusePair(
         std::optional<double> a,
         std::optional<double> b,
         double maxDifference

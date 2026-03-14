@@ -4,6 +4,7 @@
 
 #include <QLabel>
 #include <QSlider>
+#include <QFrame>
 
 #include "../../viewmodel/KpiCardVm.h"
 #include "../../logic/thresholds/ThresholdLevel.h"
@@ -23,7 +24,6 @@ namespace eclipse::ui::widgets {
         QLabel* timestampLabel,
         QSlider* indicatorSlider,
         QFrame* topStatusBar
-        topStatusBar_ = topStatusBar;
     ){
         metricLabel_ = metricLabel;
         valueLabel_ = valueLabel;
@@ -32,6 +32,7 @@ namespace eclipse::ui::widgets {
         statusLabel_ = statusLabel;
         timestampLabel_ = timestampLabel;
         indicatorSlider_ = indicatorSlider;
+        topStatusBar_ = topStatusBar;
 
         if (indicatorSlider_ != nullptr) {
             indicatorSlider_->setMinimum(0);

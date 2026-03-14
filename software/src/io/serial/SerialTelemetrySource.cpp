@@ -3,6 +3,7 @@
 #include <QtSerialPort/QSerialPort> //opens and reads serial port (COM port)
 #include <QString> //serial port uses string for names
 #include <QByteArray> // for raw serial bytes.
+#include <QDebug>
 
 namespace eclipse::io
 {
@@ -43,6 +44,9 @@ namespace eclipse::io
         }
 
         //set config data.
+        qDebug() << "Trying to open port:" << QString::fromStdString(_cfg.portName);
+        qDebug() << "Trying baud rate:" << static_cast<qint32>(_cfg.baudRate);
+
         _impl->port.setPortName(QString::fromStdString(_cfg.portName));
         _impl->port.setBaudRate(static_cast<qint32>(_cfg.baudRate));
         _impl->port.setDataBits(QSerialPort::Data8); //reccomended features from here down
@@ -52,7 +56,13 @@ namespace eclipse::io
 
         //ReadOnly is enough for telemetry input
         const bool ok = _impl->port.open(QIODevice::ReadOnly);
+        qDebug() << "QSerialPort open ok:" << ok;
+        qDebug() << "QSerialPort error:" << _impl->port.errorString();
 
+        if (ok) {
+            _impl->port.setDataTerminalReady(true); //setting DTR
+            _impl->port.setRequestToSend(false);
+        }
         //Clear any old buffered bytes on open
         _impl->rxBuffer.clear();
 
@@ -79,10 +89,18 @@ namespace eclipse::io
     std::optional<std::string> SerialTelemetrySource::pollLine()
     {
         //checks if port is open. If not open, no line to read.
-        if (!isOpen()) return std::nullopt;
+        if (!isOpen()) {
+            qDebug() << "Serial port is not open";
+            return std::nullopt;
+        }
 
         //no blocking, reading what is available now.
         const QByteArray chunk = _impl->port.readAll();
+
+        qDebug() << "Bytes read this tick:" << chunk.size();
+        if (!chunk.isEmpty()) {
+            qDebug() << "Chunk raw:" << chunk;
+        }
         //if there is nothing to read append new bytes to buffer
         if (!chunk.isEmpty()) {
             _impl->rxBuffer.append(chunk);
@@ -92,6 +110,7 @@ namespace eclipse::io
         const int nl = _impl->rxBuffer.indexOf('\n');
         //if position of new line is less than 0 return nullopt (object that doesn't contian a value)
         if (nl < 0) {
+            qDebug() << "No newline found yet";
             return std::nullopt; // no complete line yet
         }
 
@@ -103,7 +122,7 @@ namespace eclipse::io
         if (!lineBytes.isEmpty() && lineBytes.endsWith('\r')) {
             lineBytes.chop(1);
         }
-
+        qDebug() << "Complete line extracted:" << lineBytes;
         //Convert to std::string
         return lineBytes.toStdString();
     }

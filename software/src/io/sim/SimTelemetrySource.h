@@ -41,6 +41,8 @@ namespace eclipse::io
         std::chrono::steady_clock::time_point _start{};
         std::chrono::steady_clock::time_point _nextTick{};
 
+        double unitRand();
+
         //mersenne twister engine. known for efficiency 
         std::mt19937_64 _rng{ 123456789ULL };
         //noise model, generates gaussian noise. Decided to use Gaussian Noise to fake ransom spikes.

@@ -21,7 +21,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(15, 17, 19);
-layoutTopMargin: 0;
  background: qradialgradient(
         cx:0.5, cy:0.4, radius:1.0,
         fx:0.5, fy:0.4,
@@ -351,7 +350,7 @@ QPushButton:pressed {
                    </property>
                    <property name="styleSheet">
                     <string notr="true">color: rgb(255, 85, 0);
-border-bottom-spacing: 10px;</string>
+</string>
                    </property>
                    <property name="text">
                     <string>.</string>
@@ -782,7 +781,7 @@ border-bottom-spacing: 10px;</string>
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">layoutTopMargin = 0;</string>
+                 <string notr="true"/>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
@@ -2967,7 +2966,7 @@ border:none;</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">backgorund-colour:rgb(14, 17, 20);
+              <string notr="true">background-color: rgb(14, 17, 20);
 border-radius: 10px;
 border:none;</string>
              </property>

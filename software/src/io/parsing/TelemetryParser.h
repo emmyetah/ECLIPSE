@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdint>
 
-#include "../telemetry/TelemetrySnapshot.h"
+#include "../../telemetry/TelemetrySnapshot.h"
 
 namespace eclipse::io::parsing
 {
@@ -27,11 +27,10 @@ namespace eclipse::io::parsing
     class TelemetryParser
     {
     public:
-        //for parsing a line of data into csv format, NA is shown if data is malformed
-        TelemetryParser() = default; // default constructor sice parser has no member variables
-
+        
         // return type is optional so that if i return std::nullopt if data is malformed and my router can ignore bad lines.
-        std::optional<telemetry::TelemetrySnapshot> parseLine(const std::string& line) const;
+        //changed to a vector to return collection of telemetry sample objects.
+        std::optional<std::vector<telemetry::TelemetrySample>> parseLine(const std::string& line) const;
 
     private:
         

@@ -9,6 +9,7 @@ namespace eclipse::logic::health {
         Unknown = 0, //sensor has not yet been evaluated
 
         Ok,          //sensor is operating normally
+        Invalid,     //another sensor issue that doesn't fall under other enums
         Stale,       //sensor has stopped updating within the expected time frame
         Offline,     //sensor is disconnected or unavailable
         Mismatch     //sensor disagrees with another sensor beyond tolerance e.g., temp_BME = 56 temp_SCD =12

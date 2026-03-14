@@ -18,7 +18,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets SerialPort)
 
 set(PROJECT_SOURCES
         main.cpp
-         ../src/ui/MainWindow.h
+        ../src/ui/MainWindow.h
         ../src/ui/MainWindow.cpp
         ../src/ui/MainWindow.ui
 
@@ -45,7 +45,31 @@ set(PROJECT_SOURCES
         ../src/telemetry/TelemetrySnapshot.h
         ../src/telemetry/TelemetrySnapshot.cpp
 
+        ../src/telemetry/MetricSpec.h
+        ../src/telemetry/MetricSpec.cpp
+
         ../src/io/parsing/TelemetryParser.h
+        ../src/io/parsing/TelemetryParser.cpp
+
+        ../src/core/utils/Format.h
+        ../src/core/utils/Format.cpp
+
+        ../src/core/types/Time.h
+        ../src/core/types/Time.cpp
+        ../src/core/types/Units.h
+        ../src/core/types/Units.cpp
+
+        ../src/logic/fusion/SensorFusion.h
+        ../src/logic/fusion/SensorFusion.cpp
+
+        ../src/logic/thresholds/ThresholdEvaluator.h
+        ../src/logic/thresholds/ThresholdEvaluator.cpp
+
+        ../src/logic/health/SensorHealthMonitor.h
+        ../src/logic/health/SensorHealthMonitor.cpp
+
+        ../src/logic/alerts/AlertDuplicator.h
+        ../src/logic/alerts/AlertDuplicator.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

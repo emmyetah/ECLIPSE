@@ -15,7 +15,7 @@ namespace eclipse {
 
     //stores settings required to  connect to hardware (checked ESPRESSIF docs)
     struct SerialTelemetryConfig {
-        std::string portName = "COM"; // normal for windows will update when reading from sensors if different
+        std::string portName = "COM3"; // normal for windows will update when reading from sensors if different
         uint32_t baudRate = 115200; //common for ESP32
     };
 

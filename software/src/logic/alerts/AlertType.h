@@ -15,7 +15,8 @@ namespace eclipse::logic::alerts {
         SensorOffline,     //sensor disconnected or not responding
         SensorMismatch,    //sensor fusion logic shows defference too large   
         SystemHealth,      //low battery or multipe warnings combine
-        ModeChanged        //system switched between Earth / Space modes
+        ModeChanged,        //system switched between Earth / Space modes
+        InvalidReading      // for issues not falling under the above
     };
 
 } 
