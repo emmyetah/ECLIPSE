@@ -12,6 +12,7 @@
 #include "../logic/TelemetryLogic.h"
 #include "../telemetry/TelemetrySnapshot.h"
 #include "../viewmodel/DashboardVm.h"
+#include "../logic/fusion/SensorFusion.h"
 
 #include "../io/serial/SerialTelemetrySource.h"
 #include "../io/sim/SimTelemetrySource.h"
@@ -36,7 +37,7 @@ private:
     Ui::MainWindow* ui;
     TrendPlotWidget* trendPlot_ = nullptr;
 
-    void SetupTrendPlot();
+    
     QVector<double> ConvertTrendHistory(
         const eclipse::viewmodel::DashboardVm::TrendHistory& history
     ) const;
@@ -70,6 +71,9 @@ private:
     //functions
     void PollTelemetry();
     void RefreshUi();
+    void SetupTrendPlot();
+    void BindKpiCards();
+    void ApplyFusedMetricsToSnapshot();
+    //void SetupModeUI();
 };
-
 #endif

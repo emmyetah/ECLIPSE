@@ -12,8 +12,10 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    qDebug() << "MainWindow constructor reached";
+
+    BindKpiCards();
     SetupTrendPlot();
+    //SetupModeUi();
 
     qDebug() << "About to choose telemetry source";
     qDebug() << "Sample period ms:" << config_.samplePeriodMs;
@@ -80,6 +82,83 @@ void MainWindow::SetupTrendPlot()
     layout->addWidget(trendPlot_);
 }
 
+void MainWindow::BindKpiCards() {
+    tempCardWidget_.Bind(
+        ui->tempKpiLabel,
+        ui->tempKpiDataLabel,
+        ui->tempMin,
+        ui->tempMax,
+        ui->tempStatusLabel,
+        ui->tempTimeStamp,
+        ui->tempSlider,
+        ui->tempStatusBar
+    );
+    humidityCardWidget_.Bind(
+        ui->humidityKpiLabel,
+        ui->humidityKpiDataLabel,
+        ui->humidityMin,
+        ui->humidityMax,
+        ui->humidityStatusLabel,
+        ui->humidityTimeStamp,
+        ui->humiditySlider,
+        ui->humidityStatusBar
+    );
+    pressureCardWidget_.Bind(
+        ui->pressureKpiLabel,
+        ui->pressureKpiDataLabel,
+        ui->pressureMin,
+        ui->pressureMax,
+        ui->pressureStatusLabel,
+        ui->pressureTimeStamp,
+        ui->pressureSlider,
+        ui->pressureStatusBar
+    );
+    co2CardWidget_.Bind(
+        ui->co2KpiLabel,
+        ui->co2KpiDataLabel,
+        ui->co2Min,
+        ui->co2Max,
+        ui->co2StatusLabel,
+        ui->co2TimeStamp,
+        ui->co2Slider,
+        ui->co2StatusBar
+    );
+    radiationCardWidget_.Bind(
+        ui->radiationKpiLabel,
+        ui->radiationKpiDataLabel,
+        ui->radiationMin,
+        ui->radiationMax,
+        ui->radiationStatusLabel,
+        ui->radiationTimeStamp,
+        ui->radiationSlider,
+        ui->radiationStatusBar
+    );
+}
+
+void MainWindow::ApplyFusedMetricsToSnapshot()
+{
+    auto tempFusion = eclipse::logic::fusion::SensorFusion::FuseTemperature(snapshot_);
+
+    auto now = std::chrono::steady_clock::now();
+
+    if (tempFusion.value.has_value()) {
+        eclipse::telemetry::TelemetrySample n;
+        n.metric = eclipse::telemetry::MetricId::TempC;
+        n.value = *tempFusion.value;
+        n.timestamp = now;
+        snapshot_.Apply(n);
+    }
+
+    auto humidityFusion = eclipse::logic::fusion::SensorFusion::FuseHumidity(snapshot_);
+    if (humidityFusion.value.has_value()) {
+        eclipse::telemetry::TelemetrySample n;
+        n.metric = eclipse::telemetry::MetricId::HumidityRH;
+        n.value = *humidityFusion.value;
+        n.timestamp = now;
+        snapshot_.Apply(n);
+    }
+}
+
 
 void MainWindow::PollTelemetry()
 {
@@ -123,12 +202,16 @@ void MainWindow::PollTelemetry()
     {
         snapshot_.Apply(sample);
     } 
-    
+
+    ApplyFusedMetricsToSnapshot();
+
+    qDebug() << "Temp value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::TempC).has_value();
+    qDebug() << "Humidity value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::HumidityRH).has_value();
     qDebug() << "Pressure value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::PressureHpa).has_value();
     qDebug() << "CO2 value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::CO2ppm).has_value();
     qDebug() << "Radiation value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::RadiationCpm).has_value();
 
-
+    
     auto now = std::chrono::steady_clock::now();
     logic_.Update(snapshot_, now);
 

@@ -1,5 +1,6 @@
 #include "Units.h"
 
+
 namespace core::units {
 
     std::string_view Symbol(Unit u)
@@ -8,7 +9,7 @@ namespace core::units {
         {
         case Unit::none: return "";
 
-        case Unit::celsius: return "°C";
+        case Unit::celsius:return "\u00B0C";
         case Unit::kelvin: return "K";
 
         case Unit::pascal: return "Pa";

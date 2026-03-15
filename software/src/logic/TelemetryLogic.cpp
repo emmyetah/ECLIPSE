@@ -1,8 +1,6 @@
 
 #include "TelemetryLogic.h"
 
-#include "fusion/SensorFusion.h"
-
 #include "thresholds/ThresholdEvaluator.h"
 
 #include "health/SensorHealthMonitor.h"
