@@ -33,6 +33,8 @@ namespace eclipse::viewmodel {
         //formatted value string (e.g. "23.4 C")
         const std::string& GetValueText() const;
 
+        const std::string& GetTimestampText() const;
+
         //current threshold level (Normal / Warning / Critical)
         logic::thresholds::ThresholdLevel GetLevel() const;
 
@@ -49,6 +51,7 @@ namespace eclipse::viewmodel {
 
         std::string label_;
         std::string valueText_;
+        std::string timestampText_;
 
         logic::thresholds::ThresholdLevel level_ = logic::thresholds::ThresholdLevel::Unknown;
 

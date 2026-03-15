@@ -175,6 +175,12 @@ QPushButton:pressed {
                 <property name="text">
                  <string>EARTH MODE</string>
                 </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="0" column="2">
@@ -210,6 +216,9 @@ QPushButton:pressed {
                 </property>
                 <property name="text">
                  <string>SPACE CAPSULE</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -3040,6 +3049,9 @@ background-color: rgb(28, 31, 36);</string>
                  </item>
                  <item alignment="Qt::AlignLeft">
                   <widget class="QTableWidget" name="alertTable">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>300</width>

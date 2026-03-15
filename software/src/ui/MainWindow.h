@@ -74,6 +74,6 @@ private:
     void SetupTrendPlot();
     void BindKpiCards();
     void ApplyFusedMetricsToSnapshot();
-    //void SetupModeUI();
+    void SetupModeUI();
 };
 #endif

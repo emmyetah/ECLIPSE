@@ -42,4 +42,7 @@ namespace core::time {
     // formats mission time as string 
     std::string FormatMissionTime(const MissionTime& time);
 
+    //helper that converts a timepoint into milliseconds
+    Milliseconds ToMilliseconds(const TimePoint& tp);
+
 } 

@@ -73,6 +73,7 @@ namespace eclipse::ui::widgets {
 
         eclipse::logic::thresholds::ThresholdLevel level = vm.GetLevel();
         statusLabel_->setText(LevelText(level));
+        timestampLabel_->setText(QString::fromStdString(vm.GetTimestampText()));
 
         double normalized = vm.GetNormalizedValue();
         normalized = std::clamp(normalized, 0.0, 1.0);

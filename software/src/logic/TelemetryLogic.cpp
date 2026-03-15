@@ -2,8 +2,11 @@
 #include "TelemetryLogic.h"
 
 #include "thresholds/ThresholdEvaluator.h"
-
 #include "health/SensorHealthMonitor.h"
+#include "../config/ThresholdConfig.h"
+
+
+#include <QDebug>
 
 #include "alerts/AlertDuplicator.h"
 #include "alerts/AlertFormatter.h"
@@ -17,10 +20,20 @@ namespace eclipse::logic {
 
     TelemetryLogic::TelemetryLogic()
         //constructor loads the earth and psace thresholds
-        : earthThresholds_(mode::Mode::Earth), spaceThresholds_(mode::Mode::Space)
+        : mode_(mode::Mode::Earth),
+        earthThresholds_(mode::Mode::Earth), 
+        spaceThresholds_(mode::Mode::Space)
     {
         //sets every threshold level to unknown until we update them
         levels_.fill(thresholds::ThresholdLevel::Unknown);
+
+        //setting thresholds
+        auto earthCfg = eclipse::ThresholdConfig::defaults(eclipse::EnvironmentProfile::Earth);
+        auto spaceCfg = eclipse::ThresholdConfig::defaults(eclipse::EnvironmentProfile::Space);
+
+        //building threshold sets
+        earthThresholds_ = eclipse::BuildThresholdSet(earthCfg,eclipse::EnvironmentProfile::Earth);
+        spaceThresholds_ = eclipse::BuildThresholdSet(spaceCfg,eclipse::EnvironmentProfile::Space);
     }
 
     void TelemetryLogic::SetMode(mode::Mode mode)
@@ -45,9 +58,11 @@ namespace eclipse::logic {
     }
 
     void TelemetryLogic::Update(
+        
         const telemetry::TelemetrySnapshot& snapshot,
         const core::time::TimePoint& now
     ) {
+        qDebug() << "TelemetryLogic::Update called";
         //reset per-update state that gets recalculated from scratch
         levels_.fill(thresholds::ThresholdLevel::Unknown);
 
@@ -155,10 +170,12 @@ namespace eclipse::logic {
 
     //evaluates thresholds and sends an alert ot the alerts vector if any major threshold levels have been passed.
     void TelemetryLogic::EvaluateThresholds(
+        
         //takes current values as argument
         const telemetry::TelemetrySnapshot& snapshot,
         const core::time::TimePoint& now
     ) {
+        qDebug() << "EvaluateThresholds called";
         //sets the current thresholds
         const auto& activeSet = ActiveThresholdSet();
         {
@@ -167,6 +184,7 @@ namespace eclipse::logic {
             
             if (fusionResult.value.has_value()) {
                 const auto* rule = activeSet.GetRule(telemetry::MetricId::TempC);
+                
                 //set and check the current rule pointer relating to a threshold
                 if (rule != nullptr) {
                     //if the rule is not empty set the thresholds
@@ -228,13 +246,15 @@ namespace eclipse::logic {
         // ----- Pressure -----
         {
             const auto value = snapshot.Value(telemetry::MetricId::PressureHpa);
+            qDebug() << "Pressure value exists in logic:" << value.has_value();
 
             if (value.has_value()) {
                 const auto* rule = activeSet.GetRule(telemetry::MetricId::PressureHpa);
-
+                qDebug() << "Pressure rule exists:" << (rule != nullptr);
                 if (rule != nullptr) {
                     const auto level =
                         thresholds::ThresholdEvaluator::Evaluate(*value, *rule);
+                        qDebug() << "Pressure level set to:" << static_cast<int>(level);
 
                     levels_[static_cast<std::size_t>(telemetry::MetricId::PressureHpa)] = level;
 

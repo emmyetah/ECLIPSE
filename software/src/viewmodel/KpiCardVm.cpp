@@ -35,6 +35,21 @@ namespace eclipse::viewmodel {
         //pull latest value from telemetry snapshot
         std::optional<double> value = snapshot.Value(metric_);
 
+        auto state = snapshot.Get(metric_);
+
+        if (state.lastUpdate.has_value())
+        {
+            timestampText_ = core::time::FormatMissionTime(
+                core::time::ToMissionTime(
+                    core::time::ToMilliseconds(*state.lastUpdate)
+                )
+            );
+        }
+        else
+        {
+            timestampText_ = "--:--:--";
+        }
+
         //format value text using the metric's unit + default decimal precision
         core::format::FormatSpec formatSpec;
         formatSpec.decimalsOverride = static_cast<int>(spec.decimals);
@@ -89,6 +104,12 @@ namespace eclipse::viewmodel {
 
     double KpiCardVm::GetDisplayMax() const {
         return displayMax_;
+    }
+
+    //timestamp getter
+    const std::string& KpiCardVm::GetTimestampText() const
+    {
+        return timestampText_;
     }
 
 }

@@ -37,4 +37,11 @@ namespace core::time {
         return out.str();
     }
 
+    Milliseconds ToMilliseconds(const TimePoint& tp)
+    {
+        using namespace std::chrono;
+
+        return duration_cast<milliseconds>(
+            tp.time_since_epoch());
+    }
 }

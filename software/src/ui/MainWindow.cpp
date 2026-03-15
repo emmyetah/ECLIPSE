@@ -13,9 +13,10 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
 
+    SetupModeUI();
     BindKpiCards();
     SetupTrendPlot();
-    //SetupModeUi();
+    
 
     qDebug() << "About to choose telemetry source";
     qDebug() << "Sample period ms:" << config_.samplePeriodMs;
@@ -157,6 +158,34 @@ void MainWindow::ApplyFusedMetricsToSnapshot()
         n.timestamp = now;
         snapshot_.Apply(n);
     }
+}
+
+void MainWindow::SetupModeUI()
+{
+    //default mode = Earth
+    logic_.SetMode(eclipse::logic::mode::Mode::Earth);
+
+    //highlight Earth button
+    ui->earthModePushButton->setChecked(true);
+    ui->spaceCapsulePushButton->setChecked(false);
+
+    //connect Earth button
+    connect(ui->earthModePushButton, &QPushButton::clicked, this, [this]()
+        {
+            logic_.SetMode(eclipse::logic::mode::Mode::Earth);
+
+            ui->earthModePushButton->setChecked(true);
+            ui->spaceCapsulePushButton->setChecked(false);
+        });
+
+    //connect Space button
+    connect(ui->spaceCapsulePushButton, &QPushButton::clicked, this, [this]()
+        {
+            logic_.SetMode(eclipse::logic::mode::Mode::Space);
+
+            ui->earthModePushButton->setChecked(false);
+            ui->spaceCapsulePushButton->setChecked(true);
+        });
 }
 
 

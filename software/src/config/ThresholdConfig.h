@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include "../logic/thresholds/ThresholdSet.h"
 
 namespace eclipse {
 
@@ -103,7 +104,7 @@ namespace eclipse {
                     cfg.temperatureC = ThresholdBand::Range(18.5, 18.0, 27.5, 28.0);
                     cfg.humidityRH = ThresholdBand::Range(32.0, 30.0, 68.0, 70.0);
                     cfg.pressureHpa = ThresholdBand::Range(950.0, 900.0, 1050.0, 1100.0);
-                    cfg.co2Ppm = ThresholdBand::HighOnly(970.0, 1000.0);
+                    cfg.co2Ppm = ThresholdBand::HighOnly(1000.0, 2000.0);
                     cfg.radiationCpm = ThresholdBand::HighOnly(40.0, 80.0);
                     break;
                 }
@@ -135,6 +136,69 @@ namespace eclipse {
             //just incase of an error.
         default: return "Unknown";
         }
+    }
+
+    inline eclipse::logic::thresholds::ThresholdSet BuildThresholdSet(
+        const ThresholdConfig& cfg,
+        EnvironmentProfile profile
+    )
+    {
+
+        eclipse::logic::thresholds::ThresholdSet set(
+            profile == EnvironmentProfile::Earth ?
+            logic::mode::Mode::Earth :
+            logic::mode::Mode::Space
+        );
+
+        auto convertRange = [](telemetry::MetricId id, const ThresholdBand& band)
+            {
+                eclipse::logic::thresholds::ThresholdRule rule;
+                rule.metric = id;
+
+                if (band.mode == ThresholdMode::HighOnly)
+                {
+                    rule.normal = { 0, *band.highWarn };
+                    rule.caution = { *band.highWarn, *band.highCrit };
+                    rule.warning = { *band.highCrit, *band.highCrit + 1000 };
+                    rule.critical = { *band.highCrit + 1000, 100000 };
+                }
+                else
+                {
+                    rule.normal = { *band.lowWarn, *band.highWarn };
+                    rule.caution = { *band.lowCrit, *band.lowWarn };
+                    rule.warning = { 0, *band.lowCrit };
+                    rule.critical = { *band.highWarn, *band.highCrit };
+                }
+
+                return rule;
+            };
+
+        set.SetRule(convertRange(
+            telemetry::MetricId::TempC,
+            cfg.temperatureC
+        ));
+
+        set.SetRule(convertRange(
+            telemetry::MetricId::HumidityRH,
+            cfg.humidityRH
+        ));
+
+        set.SetRule(convertRange(
+            telemetry::MetricId::PressureHpa,
+            cfg.pressureHpa
+        ));
+
+        set.SetRule(convertRange(
+            telemetry::MetricId::CO2ppm,
+            cfg.co2Ppm
+        ));
+
+        set.SetRule(convertRange(
+            telemetry::MetricId::RadiationCpm,
+            cfg.radiationCpm
+        ));
+
+        return set;
     }
 
 } 
