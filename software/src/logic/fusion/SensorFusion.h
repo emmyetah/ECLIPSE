@@ -19,7 +19,7 @@ namespace eclipse::logic::fusion {
         //fuses the latest temperature values from BME680 and SCD30
         static FusionResult FuseTemperature(
             const telemetry::TelemetrySnapshot& snapshot,
-            double maxDifference = 1.0 // hard coded maximum difference is 1 degree. they shouldn't differe more than this
+            double maxDifference = 3 // hard coded maximum difference is 3 degree. they shouldn't differe more than this
         );
 
         //fuses the latest humidity values from BME680 and SCD30

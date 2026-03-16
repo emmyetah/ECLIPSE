@@ -57,6 +57,19 @@ namespace eclipse::logic {
         spaceThresholds_ = set;
     }
 
+    std::optional<thresholds::ThresholdRule> TelemetryLogic::GetRule (telemetry::MetricId metric) 
+        const
+    {
+        const auto* rule = ActiveThresholdSet().GetRule(metric);
+
+        if (rule == nullptr)
+        {
+            return std::nullopt;
+        }
+
+        return *rule;
+    }
+
     void TelemetryLogic::Update(
         
         const telemetry::TelemetrySnapshot& snapshot,

@@ -27,6 +27,8 @@ namespace eclipse::viewmodel {
         //update plot data from metric history
         void Update(const History& history);
 
+        void SetMetric(eclipse::telemetry::MetricId metric);
+
         //which metric this plot represents
         telemetry::MetricId GetMetric() const;
 

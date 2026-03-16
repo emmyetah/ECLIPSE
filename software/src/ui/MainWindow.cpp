@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "./ui_mainwindow.h"
 #include "widgets/TrendPltWidget.h"
+#include "../core/types/Time.h"
 
 #include <QVBoxLayout>
 #include <chrono>
@@ -16,6 +17,9 @@ MainWindow::MainWindow(QWidget* parent)
     SetupModeUI();
     BindKpiCards();
     SetupTrendPlot();
+    SetupMetricSelector();
+  
+
     
 
     qDebug() << "About to choose telemetry source";
@@ -81,6 +85,186 @@ void MainWindow::SetupTrendPlot()
     }
 
     layout->addWidget(trendPlot_);
+}
+
+void MainWindow::setStatusDots() {
+
+    const QString green = "#57C785";
+    const QString orange = "#FF9F43";
+    const QString red = "#FF5C5C";
+
+    auto applyDotStyle = [](QWidget* dot, const QString& colour)
+        {
+            if (dot == nullptr) return;
+
+            dot->setStyleSheet(
+                "color:" + colour + ";"
+                "border-radius:6px;"
+                "border:none;"
+            );
+        };
+
+    auto latestUpdateAgeMs = [this]() -> long long
+        {
+            std::optional<core::time::TimePoint> newest;
+
+            const auto checkMetric = [this, &newest](eclipse::telemetry::MetricId metric)
+                {
+                    const auto& state = snapshot_.Get(metric);
+
+                    if (state.lastUpdate.has_value())
+                    {
+                        if (!newest.has_value() || *state.lastUpdate > *newest)
+                        {
+                            newest = state.lastUpdate;
+                        }
+                    }
+                };
+
+            checkMetric(eclipse::telemetry::MetricId::TempC);
+            checkMetric(eclipse::telemetry::MetricId::HumidityRH);
+            checkMetric(eclipse::telemetry::MetricId::PressureHpa);
+            checkMetric(eclipse::telemetry::MetricId::CO2ppm);
+            checkMetric(eclipse::telemetry::MetricId::RadiationCpm);
+
+            if (!newest.has_value())
+            {
+                return std::numeric_limits<long long>::max();
+            }
+
+            const auto now = std::chrono::steady_clock::now();
+            return std::chrono::duration_cast<std::chrono::milliseconds>(now - *newest).count();
+        };
+    //LATENCY DOT
+    // Green  = fresh data arriving close to expected rate
+    // Orange = delayed but not yet stale
+    // Red    = very delayed / effectively stalled
+    {
+        const long long ageMs = latestUpdateAgeMs();
+        const int sampleMs = static_cast<int>(config_.samplePeriodMs);
+
+        QString latencyColour = red;
+
+        if (ageMs <= (sampleMs * 2))
+        {
+            latencyColour = green;
+        }
+        else if (ageMs <= 5000)
+        {
+            latencyColour = orange;
+        }
+        else
+        {
+            latencyColour = red;
+        }
+
+        applyDotStyle(ui->latencyStatusDot, latencyColour);
+    }
+
+    //SENSORS DOT
+    // Nominal -> green
+    // Degraded / Warning -> orange
+    // Critical / Offline -> red
+    {
+        const auto systemStatus = dashboardVm_.GetSystemStatus();
+        qDebug() << "System status:" << (int)dashboardVm_.GetSystemStatus();
+
+        QString sensorsColour = red;
+
+        if (systemStatus == eclipse::logic::health::SystemStatus::Nominal)
+        {
+            sensorsColour = green;
+        }
+        else if (systemStatus == eclipse::logic::health::SystemStatus::Degraded ||
+            systemStatus == eclipse::logic::health::SystemStatus::Warning)
+        {
+            sensorsColour = orange;
+        }
+        else
+        {
+            sensorsColour = red;
+        }
+
+        applyDotStyle(ui->sensorStatusDot, sensorsColour);
+    }
+
+    //ALERTS DOT
+    // Red    = any active critical alert
+    // Orange = any active warning OR acknowledged critical/warning
+    // Green  = no meaningful current alerts
+    {
+        const auto& alerts = dashboardVm_.GetAlerts();
+
+        bool hasRed = false;
+        bool hasOrange = false;
+
+        for (const auto& alert : alerts)
+        {
+            if (alert.state == eclipse::logic::alerts::AlertState::Cleared)
+            {
+                continue;
+            }
+
+            if (alert.state == eclipse::logic::alerts::AlertState::Active)
+            {
+                if (alert.severity == eclipse::logic::alerts::AlertSeverity::Critical)
+                {
+                    hasRed = true;
+                    break;
+                }
+
+                if (alert.severity == eclipse::logic::alerts::AlertSeverity::Warning ||
+                    alert.severity == eclipse::logic::alerts::AlertSeverity::Information)
+                {
+                    hasOrange = true;
+                }
+            }
+            else if (alert.state == eclipse::logic::alerts::AlertState::Acknowledged)
+            {
+                if (alert.severity == eclipse::logic::alerts::AlertSeverity::Critical ||
+                    alert.severity == eclipse::logic::alerts::AlertSeverity::Warning)
+                {
+                    hasOrange = true;
+                }
+            }
+        }
+
+        QString alertsColour = green;
+
+        if (hasRed)
+        {
+            alertsColour = red;
+        }
+        else if (hasOrange)
+        {
+            alertsColour = orange;
+        }
+        else
+        {
+            alertsColour = green;
+        }
+
+        applyDotStyle(ui->alertsStatusDot, alertsColour);
+    }
+
+    // CONNECTION DOT
+    // Green  = source exists and is open
+    // Red    = no source / source closed
+    {
+        bool connected = false;
+
+        if (serialSource_)
+        {
+            connected = serialSource_->isOpen();
+        }
+        else if (simSource_)
+        {
+            connected = simSource_->isOpen();
+        }
+
+        applyDotStyle(ui->connectionStatusDot, connected ? green : red);
+    }
+    
 }
 
 void MainWindow::BindKpiCards() {
@@ -188,6 +372,41 @@ void MainWindow::SetupModeUI()
         });
 }
 
+eclipse::telemetry::MetricId MainWindow::MetricFromComboIndex(int index) const
+{
+    switch (index)
+    {
+    case 0: return eclipse::telemetry::MetricId::TempC;
+    case 1: return eclipse::telemetry::MetricId::PressureHpa;
+    case 2: return eclipse::telemetry::MetricId::HumidityRH;
+    case 3: return eclipse::telemetry::MetricId::CO2ppm;
+    case 4: return eclipse::telemetry::MetricId::RadiationCpm;
+    default: return eclipse::telemetry::MetricId::TempC;
+    }
+}
+
+void MainWindow::SetupMetricSelector()
+{
+    ui->selectMetricBox->setCurrentIndex(0);
+
+    connect(
+        ui->selectMetricBox,
+        QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this,
+        [this](int index)
+        {
+            const auto metric = MetricFromComboIndex(index);
+
+            dashboardVm_.SetSelectedTrendMetric(metric);
+
+            //clear old graph history so the new metric starts fresh
+            selectedTrendHistory_ = eclipse::viewmodel::DashboardVm::TrendHistory{};
+
+            RefreshUi();
+        }
+    );
+}
+
 
 void MainWindow::PollTelemetry()
 {
@@ -244,7 +463,7 @@ void MainWindow::PollTelemetry()
     auto now = std::chrono::steady_clock::now();
     logic_.Update(snapshot_, now);
 
-    auto selectedMetric = dashboardVm_.GetTrendPlot().GetMetric();
+    auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
     auto value = snapshot_.Value(selectedMetric);
 
     if (value.has_value())
@@ -272,6 +491,7 @@ void MainWindow::RefreshUi()
         "Value",
         ConvertTrendHistory(trendVm.GetHistory())
     );
+    setStatusDots();
 }
 
 QVector<double> MainWindow::ConvertTrendHistory(

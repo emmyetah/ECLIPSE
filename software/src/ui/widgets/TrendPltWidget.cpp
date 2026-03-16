@@ -60,7 +60,7 @@ void TrendPlotWidget::SetupAxes()
     axisX_->setTickCount(6);
     axisX_->setRange(0, 10);
 
-    axisY_->setTitleText("Temperature(°C)");
+    axisY_->setTitleText("Temperature");
     axisY_->setLabelFormat("%.1f");
     axisY_->setTickCount(6);
     axisY_->setRange(0.0, 100.0);

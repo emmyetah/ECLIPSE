@@ -1,5 +1,7 @@
 #include "SensorHealthMonitor.h"
 
+
+
 namespace eclipse::logic::health {
 
 
@@ -59,6 +61,8 @@ namespace eclipse::logic::health {
         const SensorStatus co2Status =
             EvaluateChannel(snapshot, telemetry::MetricId::CO2ppm, now, staleAfter);
 
+
+
         //if any core channel is offline, the whole sensor is offline
         if (tempStatus == SensorStatus::Offline ||
             humidityStatus == SensorStatus::Offline ||
@@ -115,7 +119,10 @@ namespace eclipse::logic::health {
             return SystemStatus::Degraded;
         }
 
+
         return SystemStatus::Nominal;
+
+        
     }
 
     SensorStatus SensorHealthMonitor::EvaluateChannel(

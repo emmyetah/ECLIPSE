@@ -64,11 +64,11 @@ namespace eclipse::ui::widgets {
 
         minLabel_->setText(
             //g for general format, 4 for precision (number of significant digits)
-            "min:" + QString::number(vm.GetDisplayMin(), 'g', 4)
+            "min:" + QString::number(vm.GetDisplayMin(), 'f', 1)
         );
 
         maxLabel_->setText(
-            "max:" + QString::number(vm.GetDisplayMax(), 'g', 4)
+            "max:" + QString::number(vm.GetDisplayMax(), 'f', 1)
         );
 
         eclipse::logic::thresholds::ThresholdLevel level = vm.GetLevel();

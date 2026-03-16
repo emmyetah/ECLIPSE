@@ -67,6 +67,7 @@ namespace eclipse::viewmodel {
 
     void DashboardVm::SetSelectedTrendMetric(telemetry::MetricId metric) {
         selectedTrendMetric_ = metric;
+        trendPlot_.SetMetric(metric);
     }
 
     telemetry::MetricId DashboardVm::GetSelectedTrendMetric() const {

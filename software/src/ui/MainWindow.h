@@ -47,6 +47,7 @@ private:
 
     //telemetry pipeline
     eclipse::telemetry::TelemetrySnapshot snapshot_;
+  
     eclipse::logic::TelemetryLogic logic_;
     eclipse::viewmodel::DashboardVm dashboardVm_;
     eclipse::io::parsing::TelemetryParser parser_;
@@ -68,12 +69,15 @@ private:
     eclipse::ui::widgets::KpiCardWidget co2CardWidget_;
     eclipse::ui::widgets::KpiCardWidget radiationCardWidget_;
 
-    //functions
+    //functions  
+    eclipse::telemetry::MetricId MetricFromComboIndex(int index) const;
     void PollTelemetry();
     void RefreshUi();
     void SetupTrendPlot();
     void BindKpiCards();
     void ApplyFusedMetricsToSnapshot();
     void SetupModeUI();
+    void setStatusDots();
+    void SetupMetricSelector();
 };
 #endif

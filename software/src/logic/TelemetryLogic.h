@@ -12,6 +12,7 @@
 
 #include "thresholds/ThresholdLevel.h"
 #include "thresholds/ThresholdSet.h"
+#include "thresholds/ThresholdRule.h"
 
 #include "alerts/Alert.h"
 
@@ -55,6 +56,9 @@ namespace eclipse::logic {
 
         //returns the current overall system status
         health::SystemStatus GetSystemStatus() const;
+
+        //helper to return the current thresh rule
+        std::optional<thresholds::ThresholdRule> GetRule(telemetry::MetricId metric) const;
 
         //returns the current active/recent alerts
         const std::vector<alerts::Alert>& GetAlerts() const;

@@ -30,6 +30,11 @@ namespace eclipse::viewmodel {
         stats_ = telemetry::history::computeStats(history_);
     }
 
+    void TrendPlotVm::SetMetric(eclipse::telemetry::MetricId metric)
+    {
+        metric_ = metric;
+    }
+
     //which metric this plot represents
     telemetry::MetricId TrendPlotVm::GetMetric() const {
         return metric_;
