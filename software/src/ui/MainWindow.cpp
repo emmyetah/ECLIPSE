@@ -3,6 +3,11 @@
 #include "widgets/TrendPltWidget.h"
 #include "../core/types/Time.h"
 
+#include "dialogs/AlertDialog.h"
+#include "../logic/alerts/AlertFormatter.h"
+#include "../telemetry/MetricSpec.h"
+
+#include <QDateTime>
 #include <QVBoxLayout>
 #include <chrono>
 #include <QDebug>
@@ -18,6 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
     BindKpiCards();
     SetupTrendPlot();
     SetupMetricSelector();
+    alertsTableWidget_.Bind(ui->alertTable);
   
 
     
@@ -474,6 +480,7 @@ void MainWindow::PollTelemetry()
     dashboardVm_.Update(snapshot_, logic_, selectedTrendHistory_);
 
     RefreshUi();
+    MaybeShowAlertDialog();
 }
 
 void MainWindow::RefreshUi()
@@ -483,6 +490,8 @@ void MainWindow::RefreshUi()
     pressureCardWidget_.Update(dashboardVm_.GetPressureCard());
     co2CardWidget_.Update(dashboardVm_.GetCo2Card());
     radiationCardWidget_.Update(dashboardVm_.GetRadiationCard());
+
+    alertsTableWidget_.Update(dashboardVm_.GetAlerts());
 
     const auto& trendVm = dashboardVm_.GetTrendPlot();
 
@@ -507,4 +516,195 @@ QVector<double> MainWindow::ConvertTrendHistory(
     }
 
     return values;
+}
+//Added alert dialog helper functoions
+std::optional<eclipse::logic::alerts::Alert> MainWindow::FindPopupCandidate() const
+{
+    const auto& alerts = dashboardVm_.GetAlerts();
+
+    //active critical first
+    for (const auto& alert : alerts)
+    {
+        if (alert.state == eclipse::logic::alerts::AlertState::Active &&
+            alert.severity == eclipse::logic::alerts::AlertSeverity::Critical)
+        {
+            return alert;
+        }
+    }
+
+    //then active warning
+    for (const auto& alert : alerts)
+    {
+        if (alert.state == eclipse::logic::alerts::AlertState::Active &&
+            alert.severity == eclipse::logic::alerts::AlertSeverity::Warning)
+        {
+            return alert;
+        }
+    }
+
+    return std::nullopt;
+}
+
+MainWindow::AlertPopupKey MainWindow::MakePopupKey(
+    const eclipse::logic::alerts::Alert& alert
+) const
+{
+    AlertPopupKey key;
+    key.type = alert.type;
+    key.severity = alert.severity;
+    key.metric = alert.metric;
+    return key;
+}
+
+QString MainWindow::FormatAlertMetric(const eclipse::logic::alerts::Alert& alert) const
+{
+    if (!alert.metric.has_value())
+    {
+        return "System";
+    }
+
+    const auto& spec = eclipse::telemetry::GetMetricSpec(*alert.metric);
+    return QString::fromUtf8(
+        spec.displayName.data(),
+        static_cast<int>(spec.displayName.size())
+    );
+}
+
+QString MainWindow::FormatAlertValueNumber(const eclipse::logic::alerts::Alert& alert) const
+{
+    if (!alert.metric.has_value())
+    {
+        return "--";
+    }
+
+    const auto value = snapshot_.Value(*alert.metric);
+    if (!value.has_value())
+    {
+        return "--";
+    }
+
+    return QString::number(*value, 'f', 0);
+}
+
+QString MainWindow::FormatAlertValueUnit(
+    const eclipse::logic::alerts::Alert& alert
+) const
+{
+    if (!alert.metric.has_value())
+    {
+        return "";
+    }
+
+    const auto& spec =
+        eclipse::telemetry::GetMetricSpec(*alert.metric);
+
+    auto symbol = core::units::Symbol(spec.unit);
+
+    return QString::fromUtf8(
+        symbol.data(),
+        static_cast<int>(symbol.size())
+    );
+}
+
+QString MainWindow::FormatAlertTimestamp(const eclipse::logic::alerts::Alert& alert) const
+{
+    Q_UNUSED(alert);
+    return QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+}
+
+void MainWindow::FocusAlertsTable()
+{
+    if (ui->alertTable == nullptr)
+    {
+        return;
+    }
+
+    ui->alertTable->setFocus();
+
+    if (ui->alertTable->rowCount() > 0)
+    {
+        ui->alertTable->selectRow(0);
+        ui->alertTable->scrollToTop();
+    }
+}
+
+void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
+{
+    alertDialogOpen_ = true;
+    activePopupKey_ = MakePopupKey(alert);
+    lastShownPopupKey_ = activePopupKey_;
+
+    AlertDialog dialog(this);
+
+    connect(&dialog, &AlertDialog::AcknowledgeRequested,
+        this, &MainWindow::AcknowledgePopupAlert);
+
+    connect(&dialog, &AlertDialog::ViewAlertsRequested,
+        this, &MainWindow::FocusAlertsTable);
+
+    const QString metric = FormatAlertMetric(alert);
+    const QString message = QString::fromStdString(alert.message.empty()
+        ? eclipse::logic::alerts::AlertFormatter::Format(alert)
+        : alert.message);
+
+    const QString valueNumber = FormatAlertValueNumber(alert);
+    const QString valueUnit = FormatAlertValueUnit(alert);
+    const QString severity = QString::fromUtf8(
+        eclipse::logic::alerts::AlertFormatter::SeverityToString(alert.severity)
+    );
+    const QString timestamp = FormatAlertTimestamp(alert);
+
+    dialog.SetAlertData(
+        metric,
+        message,
+        valueNumber,
+        valueUnit,
+        severity,
+        timestamp
+    );
+
+    dialog.exec();
+
+    alertDialogOpen_ = false;
+    activePopupKey_.reset();
+}
+
+void MainWindow::MaybeShowAlertDialog()
+{
+    if (alertDialogOpen_)
+    {
+        return;
+    }
+
+    const auto candidate = FindPopupCandidate();
+    if (!candidate.has_value())
+    {
+        return;
+    }
+
+    const auto key = MakePopupKey(*candidate);
+
+    //do not spam the same still-active popup every refresh
+    if (lastShownPopupKey_.has_value() && *lastShownPopupKey_ == key)
+    {
+        return;
+    }
+
+    ShowAlertDialog(*candidate);
+}
+
+void MainWindow::AcknowledgePopupAlert()
+{
+    if (!activePopupAlertIndex_.has_value())
+    {
+        return;
+    }
+
+    logic_.AcknowledgeAlert(*activePopupAlertIndex_);
+
+    dashboardVm_.Update(snapshot_, logic_, selectedTrendHistory_);
+    RefreshUi();
+
+    activePopupAlertIndex_.reset();
+    lastShownPopupAlertIndex_.reset();
 }

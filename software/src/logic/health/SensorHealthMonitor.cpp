@@ -22,10 +22,10 @@ namespace eclipse::logic::health {
         }
 
         //if any core channel is invalid, mark the sensor invalid
-        if (tempStatus == SensorStatus::Invalid ||
-            humidityStatus == SensorStatus::Invalid ||
-            pressureStatus == SensorStatus::Invalid) {
-            return SensorStatus::Invalid;
+        if (tempStatus == SensorStatus::SensorError ||
+            humidityStatus == SensorStatus::SensorError ||
+            pressureStatus == SensorStatus::SensorError) {
+            return SensorStatus::SensorError;
         }
 
         //if any core channel is stale, mark the sensor stale
@@ -71,10 +71,10 @@ namespace eclipse::logic::health {
         }
 
         //if any core channel is invalid, mark the sensor invalid
-        if (tempStatus == SensorStatus::Invalid ||
-            humidityStatus == SensorStatus::Invalid ||
-            co2Status == SensorStatus::Invalid) {
-            return SensorStatus::Invalid;
+        if (tempStatus == SensorStatus::SensorError ||
+            humidityStatus == SensorStatus::SensorError ||
+            co2Status == SensorStatus::SensorError) {
+            return SensorStatus::SensorError;
         }
 
         //if any core channel is stale, mark the sensor stale
@@ -106,8 +106,8 @@ namespace eclipse::logic::health {
         }
 
         // Invalid sensors indicate a warning-level issue
-        if (bme680Status == SensorStatus::Invalid ||
-            scd30Status == SensorStatus::Invalid) {
+        if (bme680Status == SensorStatus::SensorError ||
+            scd30Status == SensorStatus::SensorError) {
             return SystemStatus::Warning;
         }
 
@@ -140,7 +140,7 @@ namespace eclipse::logic::health {
 
         // Latest reading was explicitly marked invalid.
         if (!state.valid) {
-            return SensorStatus::Invalid;
+            return SensorStatus::SensorError;
         }
 
         // Reading exists but is too old.

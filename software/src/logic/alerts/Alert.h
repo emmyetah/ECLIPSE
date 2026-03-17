@@ -25,6 +25,9 @@ namespace eclipse::logic::alerts {
 
         //timestamp for when the alert was created or updated.
         core::time::TimePoint timestamp{};
+
+        //fixed time for alert table in UI
+        core::time::Milliseconds missionElapsedAtStart{};
     };
 
 }

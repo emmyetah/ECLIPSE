@@ -8,11 +8,13 @@ namespace eclipse::logic::alerts {
     ) {
         //compare the alert against every existing alert
         for (const auto& alert : existingAlerts) {
+            if (alert.state != AlertState::Active) {
+                continue;
+            }
             if (SameIdentity(candidate, alert)) {
                 return true;
             }
         }
-
         return false;
     }
 

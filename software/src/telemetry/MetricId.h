@@ -23,6 +23,12 @@ namespace eclipse::telemetry {
 
         // Radiation
         RadiationCpm,
+
+        //Sensor Health Metrics
+        BME680Health,
+        SCD30Health,
+        SystemHealth,
+
         // Sentinel value (not a real metric) 
         Count //number of enum entries
     };

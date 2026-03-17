@@ -36,7 +36,7 @@ namespace eclipse::logic::alerts {
     const char* AlertFormatter::SeverityToString(AlertSeverity severity)
     {
         switch (severity) {
-        case AlertSeverity::Info:
+        case AlertSeverity::Information:
             return "Info";
 
         case AlertSeverity::Warning:
@@ -69,7 +69,7 @@ namespace eclipse::logic::alerts {
         case AlertType::InvalidReading:
             return "Invalid reading";
 
-        case AlertType::SystemDegraded:
+        case AlertType::SystemHealth:
             return "System degraded";
 
         case AlertType::ModeChanged:

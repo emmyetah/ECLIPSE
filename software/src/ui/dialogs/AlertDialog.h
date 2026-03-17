@@ -38,6 +38,7 @@ private slots:
     void OnAcknowledgeClicked();
     void OnViewAlertsClicked();
     void OnCloseClicked();
+    void ApplySeverityStyle(const QString& severity);
 
 private:
     Ui::AlertDialog* ui;

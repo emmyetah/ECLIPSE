@@ -27,6 +27,8 @@ namespace eclipse::logic {
     public:
         TelemetryLogic();
 
+        core::time::TimePoint missionStart_ = core::time::Now();
+
         //sets the current operating mode Earth/Space
         void SetMode(mode::Mode mode);
 
@@ -109,6 +111,7 @@ namespace eclipse::logic {
         health::SensorStatus bme680Status_ = health::SensorStatus::Unknown;
         health::SensorStatus scd30Status_ = health::SensorStatus::Unknown;
         health::SystemStatus systemStatus_ = health::SystemStatus::Unknown;
+
 
         std::vector<alerts::Alert> alerts_; //active/recent alerts
     };

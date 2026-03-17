@@ -26,6 +26,12 @@ set(PROJECT_SOURCES
         ../src/ui/widgets/TrendPltWidget.cpp
         ../src/ui/widgets/KpiCardWidget.h
         ../src/ui/widgets/KpiCardWidget.cpp
+        ../src/ui/widgets/AlertsTableWidget.h
+        ../src/ui/widgets/AlertsTableWidget.cpp
+
+        ../src/ui/dialogs/AlertDialog.h
+        ../src/ui/dialogs/AlertDialog.cpp
+        ../src/ui/dialogs/AlertDialog.ui
 
         ../src/viewmodel/KpiCardVm.h
         ../src/viewmodel/KpiCardVm.cpp
@@ -70,6 +76,11 @@ set(PROJECT_SOURCES
 
         ../src/logic/alerts/AlertDuplicator.h
         ../src/logic/alerts/AlertDuplicator.cpp
+        ../src/logic/alerts/AlertFormatter.h
+        ../src/logic/alerts/AlertFormatter.cpp
+        ../src/logic/alerts/AlertSeverity.h
+        ../src/logic/alerts/AlertState.h
+        ../src/logic/alerts/AlertType.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

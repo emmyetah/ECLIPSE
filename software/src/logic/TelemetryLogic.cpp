@@ -87,6 +87,7 @@ namespace eclipse::logic {
 
         //mark alerts that are no longer valid
         MarkClearedAlerts();
+        PurgeClearedAlerts();
     }
 
     thresholds::ThresholdLevel TelemetryLogic::GetThresholdLevel(telemetry::MetricId metric) const
@@ -138,22 +139,54 @@ namespace eclipse::logic {
     {
         for (auto& alert : alerts_)
         {
-            //only active or acknowledged alerts can become cleared
-            if (alert.state == alerts::AlertState::Active ||
-                alert.state == alerts::AlertState::Acknowledged)
+            if (alert.state != alerts::AlertState::Active &&
+                alert.state != alerts::AlertState::Acknowledged)
             {
-                if (alert.metric.has_value())
+                continue;
+            }
+
+            if (!alert.metric.has_value())
+            {
+                continue;
+            }
+
+            const auto metric = *alert.metric;
+
+            // threshold alerts
+            if (metric == telemetry::MetricId::TempC ||
+                metric == telemetry::MetricId::HumidityRH ||
+                metric == telemetry::MetricId::PressureHpa ||
+                metric == telemetry::MetricId::CO2ppm ||
+                metric == telemetry::MetricId::RadiationCpm)
+            {
+                const auto level = levels_[static_cast<std::size_t>(metric)];
+
+                if (level == thresholds::ThresholdLevel::Normal ||
+                    level == thresholds::ThresholdLevel::Caution)
                 {
-                    auto metric = *alert.metric;
-
-                    //if the metric is now normal or caution, the alert condition is gone
-                    auto level = levels_[static_cast<std::size_t>(metric)];
-
-                    if (level == thresholds::ThresholdLevel::Normal ||
-                        level == thresholds::ThresholdLevel::Caution)
-                    {
-                        alert.state = alerts::AlertState::Cleared;
-                    }
+                    alert.state = alerts::AlertState::Cleared;
+                }
+            }
+            // BME680 health alerts
+            else if (metric == telemetry::MetricId::BME680Health)
+            {
+                if (bme680Status_ != health::SensorStatus::Offline &&
+                    bme680Status_ != health::SensorStatus::SensorError &&
+                    bme680Status_ != health::SensorStatus::Stale &&
+                    bme680Status_ != health::SensorStatus::Mismatch)
+                {
+                    alert.state = alerts::AlertState::Cleared;
+                }
+            }
+            // SCD30 health alerts
+            else if (metric == telemetry::MetricId::SCD30Health)
+            {
+                if (scd30Status_ != health::SensorStatus::Offline &&
+                    scd30Status_ != health::SensorStatus::SensorError &&
+                    scd30Status_ != health::SensorStatus::Stale &&
+                    scd30Status_ != health::SensorStatus::Mismatch)
+                {
+                    alert.state = alerts::AlertState::Cleared;
                 }
             }
         }
@@ -217,6 +250,7 @@ namespace eclipse::logic {
                         alert.metric = telemetry::MetricId::TempC;
                         alert.message = "Temperature exceeded threshold";
                         alert.timestamp = now;
+                        alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
                         //add the alert to the alerts vector.
                         PushAlert(alert);
@@ -249,6 +283,7 @@ namespace eclipse::logic {
                         alert.metric = telemetry::MetricId::HumidityRH;
                         alert.message = "Humidity exceeded threshold";
                         alert.timestamp = now;
+                        alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
                         PushAlert(alert);
                     }
@@ -282,6 +317,7 @@ namespace eclipse::logic {
                         alert.metric = telemetry::MetricId::PressureHpa;
                         alert.message = "Pressure exceeded threshold";
                         alert.timestamp = now;
+                        alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
                         PushAlert(alert);
                     }
@@ -313,6 +349,7 @@ namespace eclipse::logic {
                         alert.metric = telemetry::MetricId::CO2ppm;
                         alert.message = "CO2 exceeded threshold";
                         alert.timestamp = now;
+                        alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
                         PushAlert(alert);
                     }
@@ -344,6 +381,7 @@ namespace eclipse::logic {
                         alert.metric = telemetry::MetricId::RadiationCpm;
                         alert.message = "Radiation exceeded threshold";
                         alert.timestamp = now;
+                        alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
                         PushAlert(alert);
                     }
@@ -379,7 +417,7 @@ namespace eclipse::logic {
 
         //alert for BME680 issues
         if (bme680Status_ == health::SensorStatus::Offline ||
-            bme680Status_ == health::SensorStatus::Invalid ||
+            bme680Status_ == health::SensorStatus::SensorError ||
             bme680Status_ == health::SensorStatus::Stale ||
             bme680Status_ == health::SensorStatus::Mismatch) {
             //create and push alert
@@ -388,7 +426,7 @@ namespace eclipse::logic {
                 ? alerts::AlertType::SensorMismatch
                 : (bme680Status_ == health::SensorStatus::Stale)
                 ? alerts::AlertType::SensorStale
-                : (bme680Status_ == health::SensorStatus::Invalid)
+                : (bme680Status_ == health::SensorStatus::SensorError)
                 ? alerts::AlertType::InvalidReading
                 : alerts::AlertType::SensorOffline;
 
@@ -398,14 +436,16 @@ namespace eclipse::logic {
 
             alert.state = alerts::AlertState::Active;
             alert.message = "BME680 health issue detected";
+            alert.metric = telemetry::MetricId::BME680Health;
             alert.timestamp = now;
+            alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
             PushAlert(alert);
         }
 
         //alert for SCD30 issues
         if (scd30Status_ == health::SensorStatus::Offline ||
-            scd30Status_ == health::SensorStatus::Invalid ||
+            scd30Status_ == health::SensorStatus::SensorError ||
             scd30Status_ == health::SensorStatus::Stale ||
             scd30Status_ == health::SensorStatus::Mismatch) {
             alerts::Alert alert;
@@ -413,7 +453,7 @@ namespace eclipse::logic {
                 ? alerts::AlertType::SensorMismatch
                 : (scd30Status_ == health::SensorStatus::Stale)
                 ? alerts::AlertType::SensorStale
-                : (scd30Status_ == health::SensorStatus::Invalid)
+                : (scd30Status_ == health::SensorStatus::SensorError)
                 ? alerts::AlertType::InvalidReading
                 : alerts::AlertType::SensorOffline;
 
@@ -423,7 +463,9 @@ namespace eclipse::logic {
 
             alert.state = alerts::AlertState::Active;
             alert.message = "SCD30 health issue detected";
+            alert.metric = telemetry::MetricId::SCD30Health;
             alert.timestamp = now;
+            alert.missionElapsedAtStart = std::chrono::duration_cast<core::time::Milliseconds>(now - missionStart_);
 
             PushAlert(alert);
         }
