@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <array>
 
 #include "../config/Config.h"
 #include "../io/parsing/TelemetryParser.h"
@@ -81,8 +82,8 @@ private:
     std::unique_ptr<eclipse::io::SerialTelemetrySource> serialSource_;
     std::unique_ptr<eclipse::io::SimTelemetrySource> simSource_;
 
-    //trend history for selected metric
-    eclipse::viewmodel::DashboardVm::TrendHistory selectedTrendHistory_;
+    //trend history for selected metric - updated to store data for every metric continuosly
+    std::array<eclipse::viewmodel::DashboardVm::TrendHistory,static_cast<std::size_t>(eclipse::telemetry::MetricId::Count)> metricHistories_{};
 
     //update timer
     QTimer* telemetryTimer_ = nullptr;
@@ -125,5 +126,8 @@ private:
     QString FormatAlertValueNumber(const eclipse::logic::alerts::Alert& alert) const;
     QString FormatAlertValueUnit(const eclipse::logic::alerts::Alert& alert) const;
     QString FormatAlertTimestamp(const eclipse::logic::alerts::Alert& alert) const;
+
+    //graph helper
+    eclipse::viewmodel::DashboardVm::TrendHistory& HistoryForMetric(eclipse::telemetry::MetricId metric);
 };
 #endif

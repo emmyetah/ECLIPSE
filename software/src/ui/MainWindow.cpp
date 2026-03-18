@@ -364,6 +364,12 @@ void MainWindow::SetupModeUI()
         {
             logic_.SetMode(eclipse::logic::mode::Mode::Earth);
 
+            //clear metric history when mode swtches
+            for (auto& history : metricHistories_)
+            {
+                history.clear();
+            }
+
             ui->earthModePushButton->setChecked(true);
             ui->spaceCapsulePushButton->setChecked(false);
         });
@@ -372,6 +378,11 @@ void MainWindow::SetupModeUI()
     connect(ui->spaceCapsulePushButton, &QPushButton::clicked, this, [this]()
         {
             logic_.SetMode(eclipse::logic::mode::Mode::Space);
+
+            for (auto& history : metricHistories_)
+            {
+                history.clear();
+            }
 
             ui->earthModePushButton->setChecked(false);
             ui->spaceCapsulePushButton->setChecked(true);
@@ -391,6 +402,14 @@ eclipse::telemetry::MetricId MainWindow::MetricFromComboIndex(int index) const
     }
 }
 
+//gets history for a given metric
+eclipse::viewmodel::DashboardVm::TrendHistory& MainWindow::HistoryForMetric(
+    eclipse::telemetry::MetricId metric
+)
+{
+    return metricHistories_[static_cast<std::size_t>(metric)];
+}
+
 void MainWindow::SetupMetricSelector()
 {
     ui->selectMetricBox->setCurrentIndex(0);
@@ -404,10 +423,6 @@ void MainWindow::SetupMetricSelector()
             const auto metric = MetricFromComboIndex(index);
 
             dashboardVm_.SetSelectedTrendMetric(metric);
-
-            //clear old graph history so the new metric starts fresh
-            selectedTrendHistory_ = eclipse::viewmodel::DashboardVm::TrendHistory{};
-
             RefreshUi();
         }
     );
@@ -469,15 +484,32 @@ void MainWindow::PollTelemetry()
     auto now = std::chrono::steady_clock::now();
     logic_.Update(snapshot_, now);
 
-    auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
-    auto value = snapshot_.Value(selectedMetric);
+    //updted history logic
 
-    if (value.has_value())
-    {
-        selectedTrendHistory_.add(now, value.value());
-    }
+    //adds new metric data to snapshot 
+    const auto appendMetricHistory = [this, &now](eclipse::telemetry::MetricId metric)
+        {
+            const auto value = snapshot_.Value(metric);
 
-    dashboardVm_.Update(snapshot_, logic_, selectedTrendHistory_);
+            if (value.has_value())
+            {
+                HistoryForMetric(metric).add(now, *value);
+            }
+        };
+
+    appendMetricHistory(eclipse::telemetry::MetricId::TempC);
+    appendMetricHistory(eclipse::telemetry::MetricId::HumidityRH);
+    appendMetricHistory(eclipse::telemetry::MetricId::PressureHpa);
+    appendMetricHistory(eclipse::telemetry::MetricId::CO2ppm);
+    appendMetricHistory(eclipse::telemetry::MetricId::RadiationCpm);
+
+    const auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
+
+    dashboardVm_.Update(
+        snapshot_,
+        logic_,
+        HistoryForMetric(selectedMetric)
+    );
 
     RefreshUi();
     MaybeShowAlertDialog();
@@ -702,7 +734,14 @@ void MainWindow::AcknowledgePopupAlert()
 
     logic_.AcknowledgeAlert(*activePopupAlertIndex_);
 
-    dashboardVm_.Update(snapshot_, logic_, selectedTrendHistory_);
+    //updated with new history logic.
+    const auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
+    dashboardVm_.Update(
+        snapshot_,
+        logic_,
+        HistoryForMetric(selectedMetric)
+    );
+
     RefreshUi();
 
     activePopupAlertIndex_.reset();
