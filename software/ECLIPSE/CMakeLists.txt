@@ -50,6 +50,7 @@ set(PROJECT_SOURCES
 
         ../src/telemetry/TelemetrySnapshot.h
         ../src/telemetry/TelemetrySnapshot.cpp
+         ../src/telemetry/history/TrendWindowState.h
 
         ../src/telemetry/MetricSpec.h
         ../src/telemetry/MetricSpec.cpp

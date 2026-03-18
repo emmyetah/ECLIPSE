@@ -2721,7 +2721,7 @@ border: 1px solid rgba(255, 255, 255, 40);</string>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="graph5mPushButtom">
+                     <widget class="QPushButton" name="graph1mPushButton">
                       <property name="minimumSize">
                        <size>
                         <width>40</width>
@@ -2746,18 +2746,21 @@ QPushButton:hover {
     background-color: rgb(40, 44, 50);   
 }
 
-QPushButton:pressed {
+QPushButton:checked {
     background-color: rgb(136, 197, 228);  
     color: rgb(15,17,19);
 }</string>
                       </property>
                       <property name="text">
-                       <string>5m</string>
+                       <string>1m</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="graph30mPushButton">
+                     <widget class="QPushButton" name="graph5mPushButton">
                       <property name="maximumSize">
                        <size>
                         <width>50</width>
@@ -2776,13 +2779,49 @@ QPushButton:hover {
     background-color: rgb(40, 44, 50);   
 }
 
-QPushButton:pressed {
+QPushButton:checked {
     background-color: rgb(136, 197, 228);  
     color: rgb(15,17,19);
 }</string>
                       </property>
                       <property name="text">
-                       <string>30m</string>
+                       <string>5m</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="graph15mPushButton">
+                      <property name="maximumSize">
+                       <size>
+                        <width>50</width>
+                        <height>35</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    background-color: rgb(28, 31, 36); 
+    color: white;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+QPushButton:hover {
+    background-color: rgb(40, 44, 50);   
+}
+
+QPushButton:checked {
+    background-color: rgb(136, 197, 228);  
+    color: rgb(15,17,19);
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>15m</string>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>
@@ -2806,7 +2845,7 @@ QPushButton:hover {
     background-color: rgb(40, 44, 50);   
 }
 
-QPushButton:pressed {
+QPushButton:checked {
     background-color: rgb(136, 197, 228);  
     color: rgb(15,17,19);
 }</string>
@@ -2814,10 +2853,13 @@ QPushButton:pressed {
                       <property name="text">
                        <string>1h</string>
                       </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="graph6hPushButton">
+                     <widget class="QPushButton" name="graphAllPushButton">
                       <property name="maximumSize">
                        <size>
                         <width>50</width>
@@ -2836,43 +2878,16 @@ QPushButton:hover {
     background-color: rgb(40, 44, 50);   
 }
 
-QPushButton:pressed {
+QPushButton:checked {
     background-color: rgb(136, 197, 228);  
     color: rgb(15,17,19);
 }</string>
                       </property>
                       <property name="text">
-                       <string>6h</string>
+                       <string>All</string>
                       </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="graph24hPushButton">
-                      <property name="maximumSize">
-                       <size>
-                        <width>50</width>
-                        <height>35</height>
-                       </size>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton {
-    background-color: rgb(28, 31, 36); 
-    color: white;
-    border-radius: 8px;
-    padding: 6px 12px;
-}
-
-QPushButton:hover {
-    background-color: rgb(40, 44, 50);   
-}
-
-QPushButton:pressed {
-    background-color: rgb(136, 197, 228);  
-    color: rgb(15,17,19);
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>24h</string>
+                      <property name="checkable">
+                       <bool>true</bool>
                       </property>
                      </widget>
                     </item>

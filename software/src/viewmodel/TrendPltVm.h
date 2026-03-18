@@ -16,7 +16,7 @@ namespace eclipse::viewmodel {
     public:
 
         //how many samples we keep for plotting
-        static constexpr std::size_t HistoryCapacity = 300;
+        static constexpr std::size_t HistoryCapacity = 3600;
 
         using History = telemetry::history::MetricHistory<HistoryCapacity>;
         using Stats = telemetry::history::HistoryStats;

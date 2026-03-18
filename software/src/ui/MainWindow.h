@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QVector>
 #include <QString>
+#include <QButtonGroup>
 
 #include <memory>
 #include <optional>
@@ -25,6 +26,7 @@
 #include "../io/sim/SimTelemetrySource.h"
 
 #include "widgets/KpiCardWidget.h"
+#include "../telemetry/history/TrendWindowState.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -84,6 +86,8 @@ private:
 
     //trend history for selected metric - updated to store data for every metric continuosly
     std::array<eclipse::viewmodel::DashboardVm::TrendHistory,static_cast<std::size_t>(eclipse::telemetry::MetricId::Count)> metricHistories_{};
+    eclipse::telemetry::history::TrendWindow selectedTrendWindow_ = eclipse::telemetry::history::TrendWindow::FiveMinutes;
+    QButtonGroup* trendWindowGroup_ = nullptr;
 
     //update timer
     QTimer* telemetryTimer_ = nullptr;
@@ -112,6 +116,7 @@ private:
     void ApplyFusedMetricsToSnapshot();
     void SetupModeUI();
     void setStatusDots();
+    void SetupTrendWindowButtons();
     void SetupMetricSelector();
 
     //alert popup helpers
@@ -127,7 +132,9 @@ private:
     QString FormatAlertValueUnit(const eclipse::logic::alerts::Alert& alert) const;
     QString FormatAlertTimestamp(const eclipse::logic::alerts::Alert& alert) const;
 
-    //graph helper
+    //graph helpers
     eclipse::viewmodel::DashboardVm::TrendHistory& HistoryForMetric(eclipse::telemetry::MetricId metric);
+    std::chrono::seconds TrendWindowDuration() const;
+    eclipse::viewmodel::DashboardVm::TrendHistory BuildFilteredHistory(const eclipse::viewmodel::DashboardVm::TrendHistory& source) const;
 };
 #endif

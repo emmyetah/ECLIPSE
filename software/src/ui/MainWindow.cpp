@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
     BindKpiCards();
     SetupTrendPlot();
     SetupMetricSelector();
+    SetupTrendWindowButtons();
     alertsTableWidget_.Bind(ui->alertTable);
   
 
@@ -504,15 +505,96 @@ void MainWindow::PollTelemetry()
     appendMetricHistory(eclipse::telemetry::MetricId::RadiationCpm);
 
     const auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
+    const auto filteredHistory = BuildFilteredHistory(HistoryForMetric(selectedMetric));
 
     dashboardVm_.Update(
         snapshot_,
         logic_,
-        HistoryForMetric(selectedMetric)
+        filteredHistory
     );
 
     RefreshUi();
     MaybeShowAlertDialog();
+}
+
+void MainWindow::SetupTrendWindowButtons()
+{
+    using TW = eclipse::telemetry::history::TrendWindow;
+
+    connect(ui->graph1mPushButton, &QPushButton::clicked, this, [this]()
+        {
+            selectedTrendWindow_ = TW::OneMinute;
+            RefreshUi();
+        });
+
+    connect(ui->graph5mPushButton, &QPushButton::clicked, this, [this]()
+        {
+            selectedTrendWindow_ = TW::FiveMinutes;
+            RefreshUi();
+        });
+
+    connect(ui->graph15mPushButton, &QPushButton::clicked, this, [this]()
+        {
+            selectedTrendWindow_ = TW::FifteenMinutes;
+            RefreshUi();
+        });
+
+    connect(ui->graph1hPushButton, &QPushButton::clicked, this, [this]()
+        {
+            selectedTrendWindow_ = TW::OneHour;
+            RefreshUi();
+        });
+
+    connect(ui->graphAllPushButton, &QPushButton::clicked, this, [this]()
+        {
+            selectedTrendWindow_ = TW::AllTime;
+            RefreshUi();
+        });
+
+    //for making checkable buttons mutually exclusive
+    trendWindowGroup_ = new QButtonGroup(this);
+
+    trendWindowGroup_->setExclusive(true);
+
+    trendWindowGroup_->addButton(ui->graph1mPushButton);
+    trendWindowGroup_->addButton(ui->graph5mPushButton);
+    trendWindowGroup_->addButton(ui->graph15mPushButton);
+    trendWindowGroup_->addButton(ui->graph1hPushButton);
+    trendWindowGroup_->addButton(ui->graphAllPushButton);
+
+    ui->graph5mPushButton->setChecked(true);
+}
+
+eclipse::viewmodel::DashboardVm::TrendHistory MainWindow::BuildFilteredHistory(
+    const eclipse::viewmodel::DashboardVm::TrendHistory& source
+) const
+{
+    eclipse::viewmodel::DashboardVm::TrendHistory filtered;
+
+    if (source.empty())
+    {
+        return filtered;
+    }
+
+    const auto latest = source.latest();
+    if (!latest.has_value())
+    {
+        return filtered;
+    }
+    auto duration = eclipse::telemetry::history::WindowDuration(selectedTrendWindow_);
+    const auto cutoff = latest->t - duration;
+
+    for (std::size_t i = 0; i < source.size(); ++i)
+    {
+        const auto& p = source.point(i);
+
+        if (p.t >= cutoff)
+        {
+            filtered.add(p.t, p.v);
+        }
+    }
+
+    return filtered;
 }
 
 void MainWindow::RefreshUi()
