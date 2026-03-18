@@ -30,12 +30,15 @@ namespace eclipse::viewmodel {
         //get threshold rule from logic instead of static spec
         auto ruleOpt = logic.GetRule(metric_);
 
+        
+
         if (ruleOpt.has_value())
         {
             const auto& rule = *ruleOpt;
 
             displayMin_ = rule.normal.min;
             displayMax_ = rule.critical.max;
+            
         }
         else
         {
@@ -43,6 +46,8 @@ namespace eclipse::viewmodel {
             displayMin_ = spec.displayMin;
             displayMax_ = spec.displayMax;
         }
+        
+        
 
         //pull latest threshold/severity from logic layer
         level_ = logic.GetThresholdLevel(metric_);

@@ -159,8 +159,8 @@ namespace eclipse {
                 {
                     rule.normal = { 0, *band.highWarn };
                     rule.caution = { *band.highWarn, *band.highCrit };
-                    rule.warning = { *band.highCrit, *band.highCrit + 1000 };
-                    rule.critical = { *band.highCrit + 1000, 100000 };
+                    rule.warning = { *band.highCrit, *band.highCrit * 1.5 };
+                    rule.critical = { *band.highCrit * 1.5, *band.highCrit * 2.0 };
                 }
                 else
                 {
