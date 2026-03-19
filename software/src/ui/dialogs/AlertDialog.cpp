@@ -7,9 +7,6 @@ AlertDialog::AlertDialog(QWidget* parent)
 {
     ui->setupUi(this);
 
-    //keep dialog fixed to my design size
-    setFixedSize(size());
-
     //connect buttons from .ui file
     connect(ui->acknowledgeButton, &QPushButton::clicked,
         this, &AlertDialog::OnAcknowledgeClicked);

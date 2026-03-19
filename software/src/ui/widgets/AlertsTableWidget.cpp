@@ -39,8 +39,12 @@ namespace eclipse::ui::widgets
         table_->verticalHeader()->setVisible(false);
         table_->setShowGrid(false);
 
-        table_->horizontalHeader()->setStretchLastSection(true);
-        table_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        //stretch only the Metric column, fit others to content
+        auto* header = table_->horizontalHeader();
+        header->setSectionResizeMode(0, QHeaderView::ResizeToContents); //time
+        header->setSectionResizeMode(1, QHeaderView::Stretch);          //metric
+        header->setSectionResizeMode(2, QHeaderView::ResizeToContents); //severity
+        header->setSectionResizeMode(3, QHeaderView::ResizeToContents); //duration
     }
 
     void AlertsTableWidget::Update(const std::vector<logic::alerts::Alert>& alerts)

@@ -744,15 +744,14 @@ void MainWindow::FocusAlertsTable()
 
 void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
 {
-    alertDialogOpen_ = true;
     activePopupKey_ = MakePopupKey(alert);
-    lastShownPopupKey_ = activePopupKey_;
+
+    telemetryTimer_->stop();
 
     AlertDialog dialog(this);
 
     connect(&dialog, &AlertDialog::AcknowledgeRequested,
         this, &MainWindow::AcknowledgePopupAlert);
-
     connect(&dialog, &AlertDialog::ViewAlertsRequested,
         this, &MainWindow::FocusAlertsTable);
 
@@ -760,7 +759,6 @@ void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
     const QString message = QString::fromStdString(alert.message.empty()
         ? eclipse::logic::alerts::AlertFormatter::Format(alert)
         : alert.message);
-
     const QString valueNumber = FormatAlertValueNumber(alert);
     const QString valueUnit = FormatAlertValueUnit(alert);
     const QString severity = QString::fromUtf8(
@@ -768,19 +766,14 @@ void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
     );
     const QString timestamp = FormatAlertTimestamp(alert);
 
-    dialog.SetAlertData(
-        metric,
-        message,
-        valueNumber,
-        valueUnit,
-        severity,
-        timestamp
-    );
+    dialog.SetAlertData(metric, message, valueNumber, valueUnit, severity, timestamp);
 
     dialog.exec();
 
     alertDialogOpen_ = false;
     activePopupKey_.reset();
+
+    telemetryTimer_->start(config_.samplePeriodMs);
 }
 
 void MainWindow::MaybeShowAlertDialog()
@@ -804,7 +797,13 @@ void MainWindow::MaybeShowAlertDialog()
         return;
     }
 
-    ShowAlertDialog(*candidate);
+    alertDialogOpen_ = true;
+    lastShownPopupKey_ = key;
+
+    // Defer ShowAlertDialog out of the timer callback stack
+    QMetaObject::invokeMethod(this, [this, candidate]() {
+        ShowAlertDialog(*candidate);
+        }, Qt::QueuedConnection);
 }
 
 void MainWindow::AcknowledgePopupAlert()

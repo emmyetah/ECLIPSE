@@ -104,7 +104,34 @@ namespace eclipse::telemetry
             0.0,
             2000.0,
             4
-        }
+        },
+        {
+            MetricId::BME680Health,
+            "BME680 Sensor",
+            core::units::Unit::none,
+            0,
+            0.0,
+            0.0,
+            20
+        },
+        {
+            MetricId::SCD30Health,
+            "SCD30 Sensor",
+            core::units::Unit::none,
+            0,
+            0.0,
+            0.0,
+            21
+        },
+        {
+            MetricId::SystemHealth,
+            "System Health",
+            core::units::Unit::none,
+            0,
+            0.0,
+            0.0,
+            22
+        },
     };
 
     const MetricSpec& GetMetricSpec(MetricId id)
