@@ -5,6 +5,16 @@
 #include <QPen>
 #include <QtMath>
 #include <algorithm>
+#include <QPushButton> 
+
+//for export button logic
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
+#include <QMessageBox>
+
+#include <QDebug>
 
 TrendPlotWidget::TrendPlotWidget(QWidget* parent)
     : QWidget(parent)
@@ -206,4 +216,59 @@ void TrendPlotWidget::UpdateAxisRanges()
 
     axisX_->setRange(0, static_cast<int>(std::max<qsizetype>(1, data_.size() - 1)));
     axisY_->setRange(minValue - padding, maxValue + padding);
+}
+
+void TrendPlotWidget::OnExportClicked()
+{
+    qDebug() << "Export clicked - emitting ExportStarted";
+    emit ExportStarted();
+    qDebug() << "ExportStarted emitted";
+
+    const QString defaultName = QString("eclipse_export_%1.csv")
+        .arg(QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss"));
+
+    const QString filepath = QFileDialog::getSaveFileName(
+        this,
+        "Export Trend Data",
+        defaultName,
+        "CSV Files (*.csv)"
+    );
+
+    if (filepath.isEmpty())
+    {
+        emit ExportFinished(); //user cancelled
+        return;
+    }
+
+    ExportToCsv(filepath);
+    emit ExportFinished(); //always emitted here, after everything is done
+}
+
+void TrendPlotWidget::ExportToCsv(const QString& filepath)
+{
+    QFile file(filepath);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::warning(this, "Export Failed",
+            "Could not open file for writing:\n" + filepath);
+        return;
+    }
+
+    QTextStream out(&file);
+
+    out << "# Metric: " << chart_->title() << "\n";
+    out << "Sample,Value\n";
+
+    for (int i = 0; i < data_.size(); i++)
+    {
+        out << i << "," << QString::number(data_[i], 'f', 4) << "\n";
+    }
+
+    file.close();
+
+    QMessageBox::information(this, "Export Complete",
+        QString("Exported %1 samples to:\n%2").arg(data_.size()).arg(filepath));
+
+    
 }

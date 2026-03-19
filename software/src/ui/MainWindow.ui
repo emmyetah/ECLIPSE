@@ -2933,7 +2933,7 @@ QPushButton:checked {
                      </size>
                     </property>
                    </widget>
-                   <widget class="QToolButton" name="toolButton">
+                   <widget class="QToolButton" name="exportButton">
                     <property name="geometry">
                      <rect>
                       <x>930</x>

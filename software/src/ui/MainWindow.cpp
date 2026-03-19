@@ -84,6 +84,12 @@ void MainWindow::SetupTrendPlot()
 {
     trendPlot_ = new TrendPlotWidget(this);
 
+    connect(trendPlot_, &TrendPlotWidget::ExportStarted,
+        this, [this]() { telemetryTimer_->stop(); });
+
+    connect(trendPlot_, &TrendPlotWidget::ExportFinished,
+        this, [this]() { telemetryTimer_->start(config_.samplePeriodMs); });
+
     QVBoxLayout* layout = qobject_cast<QVBoxLayout*>(ui->trendChartContainer->layout());
     if (layout == nullptr) {
         layout = new QVBoxLayout(ui->trendChartContainer);
@@ -92,6 +98,7 @@ void MainWindow::SetupTrendPlot()
     }
 
     layout->addWidget(trendPlot_);
+    connect(ui->exportButton, &QPushButton::clicked, trendPlot_, &TrendPlotWidget::OnExportClicked);
 }
 
 void MainWindow::setStatusDots() {

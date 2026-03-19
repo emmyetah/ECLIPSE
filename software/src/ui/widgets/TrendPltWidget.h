@@ -23,6 +23,8 @@ public:
     void SetData(const QVector<double>& values);
     void SetMetricData(const QString& plotTitle, const QString& yAxisTitle, const QVector<double>& values);
     void ClearData();
+    void ExportToCsv(const QString& filepath);
+    void OnExportClicked();
 
 private:
     void BuildUi();
@@ -30,6 +32,11 @@ private:
     void SetupAxes();
     void ApplyChartStyle();
     void UpdateAxisRanges();
+
+signals:
+    void ExportStarted();
+    void ExportFinished();
+    
 
 private:
     QChart* chart_;
