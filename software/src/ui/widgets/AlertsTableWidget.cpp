@@ -2,14 +2,11 @@
 
 #include "../../logic/alerts/AlertFormatter.h"
 #include "../../telemetry/MetricSpec.h"
-
 #include "../../core/utils/Format.h"
 
 #include <QHeaderView>
 #include <QBrush>
 #include <QColor>
-
-#include <chrono>
 
 namespace eclipse::ui::widgets
 {
@@ -51,26 +48,81 @@ namespace eclipse::ui::widgets
     {
         if (table_ == nullptr) return;
 
-        table_->setRowCount(0);
+        const auto now = std::chrono::steady_clock::now();
 
-        int row = 0;
+        // Build a set of keys that are currently active so we can detect resolutions.
+        std::unordered_set<std::string> activeKeys;
+        for (const auto& alert : alerts)
+        {
+            if (alert.state != logic::alerts::AlertState::Cleared)
+                activeKeys.insert(MakeAlertKey(alert));
+        }
 
-        //for loop to add the alerts to the table.
+        // Freeze the duration of any cached alert that is no longer active.
+        for (auto& entry : cachedAlerts_)
+        {
+            if (!entry.resolvedAt.has_value())
+            {
+                if (activeKeys.find(MakeAlertKey(entry.alert)) == activeKeys.end())
+                    entry.resolvedAt = now;
+            }
+        }
+
+        // Add newly seen alerts not already in the cache.
+        // O(n) -- cachedKeys_ is a hash set so lookup is O(1) average.
         for (const auto& alert : alerts)
         {
             if (alert.state == logic::alerts::AlertState::Cleared)
-            {
                 continue;
-            }
 
+            const std::string key = MakeAlertKey(alert);
+            if (cachedKeys_.insert(key).second) // true only if newly inserted
+            {
+                CachedAlert entry;
+                entry.alert = alert;
+                entry.cachedAt = now;
+                cachedAlerts_.push_back(entry);
+            }
+        }
+
+        RebuildTable();
+    }
+
+    void AlertsTableWidget::ClearTable()
+    {
+        cachedAlerts_.clear();
+        cachedKeys_.clear();
+        if (table_ != nullptr)
+            table_->setRowCount(0);
+    }
+
+    std::string AlertsTableWidget::MakeAlertKey(const logic::alerts::Alert& alert)
+    {
+        //Severity is included so Warning and Critical for the same metric are stored as separate history entries, matching AlertDuplicator::SameIdentity.
+        std::string key = std::to_string(static_cast<int>(alert.type))
+            + "_" + std::to_string(static_cast<int>(alert.severity));
+
+        if (alert.metric.has_value())
+            key += "_" + std::to_string(static_cast<int>(*alert.metric));
+
+        return key;
+    }
+
+    void AlertsTableWidget::RebuildTable()
+    {
+        table_->setRowCount(0);
+        int row = 0;
+
+        for (const auto& entry : cachedAlerts_)
+        {
             table_->insertRow(row);
 
-            QTableWidgetItem* timeItem = MakeReadOnlyItem(FormatTime(alert));
-            QTableWidgetItem* metricItem = MakeReadOnlyItem(FormatMetric(alert));
-            QTableWidgetItem* severityItem = MakeReadOnlyItem(FormatSeverity(alert));
-            QTableWidgetItem* durationItem = MakeReadOnlyItem(FormatDuration(alert));
+            QTableWidgetItem* timeItem = MakeReadOnlyItem(FormatTime(entry.alert));
+            QTableWidgetItem* metricItem = MakeReadOnlyItem(FormatMetric(entry.alert));
+            QTableWidgetItem* severityItem = MakeReadOnlyItem(FormatSeverity(entry.alert));
+            QTableWidgetItem* durationItem = MakeReadOnlyItem(FormatDuration(entry));
 
-            ApplySeverityStyle(severityItem, alert.severity);
+            ApplySeverityStyle(severityItem, entry.alert.severity);
 
             table_->setItem(row, 0, timeItem);
             table_->setItem(row, 1, metricItem);
@@ -122,26 +174,21 @@ namespace eclipse::ui::widgets
         );
     }
 
-    QString AlertsTableWidget::FormatDuration(const logic::alerts::Alert& alert) const
+    QString AlertsTableWidget::FormatDuration(const CachedAlert& entry) const
     {
-        const auto now = std::chrono::steady_clock::now();
+        //use the frozen resolved time if the alert has cleared, otherwise keep ticking against now
+        const auto end = entry.resolvedAt.value_or(std::chrono::steady_clock::now());
         const auto seconds =
-            std::chrono::duration_cast<std::chrono::seconds>(now - alert.timestamp).count();
+            std::chrono::duration_cast<std::chrono::seconds>(end - entry.cachedAt).count();
 
         const long long hours = seconds / 3600;
         const long long minutes = (seconds % 3600) / 60;
         const long long secs = seconds % 60;
 
         if (hours > 0)
-        {
             return QString("%1h %2m").arg(hours).arg(minutes);
-        }
-
         if (minutes > 0)
-        {
             return QString("%1m %2s").arg(minutes).arg(secs);
-        }
-
         return QString("%1s").arg(secs);
     }
 

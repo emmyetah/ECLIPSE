@@ -25,8 +25,11 @@ MainWindow::MainWindow(QWidget* parent)
     SetupMetricSelector();
     SetupTrendWindowButtons();
     alertsTableWidget_.Bind(ui->alertTable);
-  
-
+    
+    //connecting clear alerts button in constructor as its a quick addition
+    connect(ui->clearAlertsButton, &QPushButton::clicked, this, [this]() {
+        alertsTableWidget_.ClearTable();
+        });
     
 
     qDebug() << "About to choose telemetry source";
@@ -643,22 +646,24 @@ std::optional<eclipse::logic::alerts::Alert> MainWindow::FindPopupCandidate() co
 {
     const auto& alerts = dashboardVm_.GetAlerts();
 
-    //active critical first
-    for (const auto& alert : alerts)
+    // Two passes: critical first, then warning
+    for (auto targetSeverity : {
+        eclipse::logic::alerts::AlertSeverity::Critical,
+        eclipse::logic::alerts::AlertSeverity::Warning
+        })
     {
-        if (alert.state == eclipse::logic::alerts::AlertState::Active &&
-            alert.severity == eclipse::logic::alerts::AlertSeverity::Critical)
+        for (const auto& alert : alerts)
         {
-            return alert;
-        }
-    }
+            if (alert.state != eclipse::logic::alerts::AlertState::Active)
+                continue;
 
-    //then active warning
-    for (const auto& alert : alerts)
-    {
-        if (alert.state == eclipse::logic::alerts::AlertState::Active &&
-            alert.severity == eclipse::logic::alerts::AlertSeverity::Warning)
-        {
+            if (alert.severity != targetSeverity)
+                continue;
+
+            // Skip alerts whose dialog has already been shown
+            if (shownPopupKeys_.count(MakePopupKey(alert)))
+                continue;
+
             return alert;
         }
     }
@@ -751,6 +756,17 @@ void MainWindow::FocusAlertsTable()
 
 void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
 {
+    //find the index of this alert so AcknowledgePopupAlert can act on it
+    const auto& alerts = dashboardVm_.GetAlerts();
+    for (std::size_t i = 0; i < alerts.size(); ++i)
+    {
+        if (MakePopupKey(alerts[i]) == MakePopupKey(alert))
+        {
+            activePopupAlertIndex_ = i;
+            break;
+        }
+    }
+
     activePopupKey_ = MakePopupKey(alert);
 
     telemetryTimer_->stop();
@@ -786,28 +802,56 @@ void MainWindow::ShowAlertDialog(const eclipse::logic::alerts::Alert& alert)
 void MainWindow::MaybeShowAlertDialog()
 {
     if (alertDialogOpen_)
-    {
         return;
+
+    const auto& alerts = dashboardVm_.GetAlerts();
+    const auto now = std::chrono::steady_clock::now();
+    constexpr auto kDebounce = std::chrono::seconds(15);
+
+    //mark keys that are no longer active with a resolved timestamp
+    for (const auto& key : shownPopupKeys_)
+    {
+        bool stillActive = false;
+        for (const auto& alert : alerts)
+        {
+            if (alert.state == eclipse::logic::alerts::AlertState::Active
+                && MakePopupKey(alert) == key)
+            {
+                stillActive = true;
+                break;
+            }
+        }
+
+        if (!stillActive && popupKeyResolvedAt_.find(key) == popupKeyResolvedAt_.end())
+            popupKeyResolvedAt_[key] = now;
+
+        if (stillActive)
+            popupKeyResolvedAt_.erase(key); //came back, cancel the resolved timer
+    }
+
+    //only erase shown keys that have been gone longer than the debounce window
+    for (auto it = shownPopupKeys_.begin(); it != shownPopupKeys_.end(); )
+    {
+        auto resolved = popupKeyResolvedAt_.find(*it);
+        if (resolved != popupKeyResolvedAt_.end()
+            && (now - resolved->second) > kDebounce)
+        {
+            popupKeyResolvedAt_.erase(resolved);
+            it = shownPopupKeys_.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
     }
 
     const auto candidate = FindPopupCandidate();
     if (!candidate.has_value())
-    {
         return;
-    }
-
-    const auto key = MakePopupKey(*candidate);
-
-    //do not spam the same still-active popup every refresh
-    if (lastShownPopupKey_.has_value() && *lastShownPopupKey_ == key)
-    {
-        return;
-    }
 
     alertDialogOpen_ = true;
-    lastShownPopupKey_ = key;
+    shownPopupKeys_.insert(MakePopupKey(*candidate));
 
-    // Defer ShowAlertDialog out of the timer callback stack
     QMetaObject::invokeMethod(this, [this, candidate]() {
         ShowAlertDialog(*candidate);
         }, Qt::QueuedConnection);

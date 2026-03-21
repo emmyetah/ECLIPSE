@@ -10,6 +10,8 @@
 #include <memory>
 #include <optional>
 #include <array>
+#include <set>
+#include <chrono>
 
 #include "../config/Config.h"
 #include "../io/parsing/TelemetryParser.h"
@@ -59,6 +61,23 @@ private:
                 && severity == other.severity
                 && metric == other.metric;
         }
+
+        //Friend free function — avoids 'this' ambiguity with QWidget::metric
+        friend bool operator<(const AlertPopupKey& a, const AlertPopupKey& b)
+        {
+            const auto t1 = static_cast<int>(a.type);
+            const auto t2 = static_cast<int>(b.type);
+            if (t1 != t2) return t1 < t2;
+
+            const auto s1 = static_cast<int>(a.severity);
+            const auto s2 = static_cast<int>(b.severity);
+            if (s1 != s2) return s1 < s2;
+
+            if (!a.metric.has_value() && !b.metric.has_value()) return false;
+            if (!a.metric.has_value()) return true;
+            if (!b.metric.has_value()) return false;
+            return static_cast<int>(*a.metric) < static_cast<int>(*b.metric);
+        }
     };
 
 private:
@@ -103,9 +122,10 @@ private:
     //alert dialog state
     bool alertDialogOpen_ = false;
     std::optional<AlertPopupKey> activePopupKey_;
-    std::optional<AlertPopupKey> lastShownPopupKey_;
+    std::set<AlertPopupKey> shownPopupKeys_;
     std::optional<std::size_t> activePopupAlertIndex_;
     std::optional<std::size_t> lastShownPopupAlertIndex_;
+    std::map<AlertPopupKey, std::chrono::steady_clock::time_point> popupKeyResolvedAt_;
 
     //functions  
     eclipse::telemetry::MetricId MetricFromComboIndex(int index) const;
@@ -127,6 +147,7 @@ private:
     void AcknowledgePopupAlert();
     void FocusAlertsTable();
 
+
     QString FormatAlertMetric(const eclipse::logic::alerts::Alert& alert) const;
     QString FormatAlertValueNumber(const eclipse::logic::alerts::Alert& alert) const;
     QString FormatAlertValueUnit(const eclipse::logic::alerts::Alert& alert) const;
@@ -134,7 +155,6 @@ private:
 
     //graph helpers
     eclipse::viewmodel::DashboardVm::TrendHistory& HistoryForMetric(eclipse::telemetry::MetricId metric);
-    std::chrono::seconds TrendWindowDuration() const;
     eclipse::viewmodel::DashboardVm::TrendHistory BuildFilteredHistory(const eclipse::viewmodel::DashboardVm::TrendHistory& source) const;
 };
 #endif
