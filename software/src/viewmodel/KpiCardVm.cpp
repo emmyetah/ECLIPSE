@@ -20,7 +20,8 @@ namespace eclipse::viewmodel {
     //updates the card with latest telemetry + logic state
     void KpiCardVm::Update(
         const telemetry::TelemetrySnapshot& snapshot,
-        const logic::TelemetryLogic& logic
+        const logic::TelemetryLogic& logic,
+        std::chrono::milliseconds missionElapsed
     ) {
         const telemetry::MetricSpec& spec = telemetry::GetMetricSpec(metric_);
 
@@ -59,11 +60,7 @@ namespace eclipse::viewmodel {
 
         if (state.lastUpdate.has_value())
         {
-            timestampText_ = core::time::FormatMissionTime(
-                core::time::ToMissionTime(
-                    core::time::ToMilliseconds(*state.lastUpdate)
-                )
-            );
+            timestampText_ = core::format::MissionTime(missionElapsed);
         }
         else
         {

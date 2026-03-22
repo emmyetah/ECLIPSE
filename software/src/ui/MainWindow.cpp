@@ -520,7 +520,8 @@ void MainWindow::PollTelemetry()
     dashboardVm_.Update(
         snapshot_,
         logic_,
-        filteredHistory
+        filteredHistory,
+        std::chrono::duration_cast<std::chrono::milliseconds>(now - logic_.missionStart_)
     );
 
     RefreshUi();
@@ -868,10 +869,12 @@ void MainWindow::AcknowledgePopupAlert()
 
     //updated with new history logic.
     const auto selectedMetric = dashboardVm_.GetSelectedTrendMetric();
+    const auto missionElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - logic_.missionStart_);
     dashboardVm_.Update(
         snapshot_,
         logic_,
-        HistoryForMetric(selectedMetric)
+        HistoryForMetric(selectedMetric),
+        missionElapsed
     );
 
     RefreshUi();

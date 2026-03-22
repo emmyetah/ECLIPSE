@@ -17,14 +17,15 @@ namespace eclipse::viewmodel {
     void DashboardVm::Update(
         const telemetry::TelemetrySnapshot& snapshot,
         const logic::TelemetryLogic& logic,
-        const TrendHistory& selectedMetricHistory
+        const TrendHistory& selectedMetricHistory,
+        std::chrono::milliseconds missionElapsed
     ) {
         //update KPI cards
-        tempCard_.Update(snapshot, logic);
-        humidityCard_.Update(snapshot, logic);
-        pressureCard_.Update(snapshot, logic);
-        co2Card_.Update(snapshot, logic);
-        radiationCard_.Update(snapshot, logic);
+        tempCard_.Update(snapshot, logic, missionElapsed);
+        humidityCard_.Update(snapshot, logic, missionElapsed);
+        pressureCard_.Update(snapshot, logic, missionElapsed);
+        co2Card_.Update(snapshot, logic, missionElapsed);
+        radiationCard_.Update(snapshot, logic, missionElapsed);
 
         //update trend plot from the currently selected history
         trendPlot_.Update(selectedMetricHistory);

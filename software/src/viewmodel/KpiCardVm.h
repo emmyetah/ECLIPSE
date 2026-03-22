@@ -21,7 +21,8 @@ namespace eclipse::viewmodel {
         //updates the card with latest telemetry + logic state
         void Update(
             const telemetry::TelemetrySnapshot& snapshot,
-            const logic::TelemetryLogic& logic
+            const logic::TelemetryLogic& logic,
+            std::chrono::milliseconds missionElapsed
         );
 
         //metric identifier

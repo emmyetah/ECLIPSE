@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstddef>
 #include <vector>
 
@@ -30,7 +31,8 @@ namespace eclipse::viewmodel {
         void Update(
             const telemetry::TelemetrySnapshot& snapshot,
             const logic::TelemetryLogic& logic,
-            const TrendHistory& selectedMetricHistory
+            const TrendHistory& selectedMetricHistory,
+            std::chrono::milliseconds missionElapsed
         );
 
         //KPI cards
