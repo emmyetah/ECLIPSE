@@ -2554,7 +2554,7 @@ QSlider::handle:horizontal {
                    <property name="minimumSize">
                     <size>
                      <width>200</width>
-                     <height>35</height>
+                     <height>34</height>
                     </size>
                    </property>
                    <property name="maximumSize">
@@ -2564,8 +2564,51 @@ QSlider::handle:horizontal {
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">background-color: rgb(28, 31, 36);
-border-radius: 5px;</string>
+                    <string notr="true">QComboBox {
+    background-color: rgb(28, 31, 36);
+    color: white;
+    border: 1px solid rgb(58, 63, 68);
+    border-radius: 0px;
+    padding: 4px 8px;
+    min-height: 24px;
+}
+
+QComboBox:hover {
+    background-color: rgb(28, 31, 36);
+}
+
+QComboBox:on {
+    background-color: rgb(28, 31, 36);
+}
+
+QComboBox QAbstractItemView {
+    background-color: rgb(28, 31, 36);
+    color: white;
+    border: 1px solid rgb(58, 63, 68);
+    outline: 0px;
+    padding: 2px;
+    selection-background-color: rgb(136, 197, 228);
+    selection-color: white;
+}
+
+QComboBox QAbstractItemView::item {
+    background-color: rgb(28, 31, 36);
+    color: white;
+    padding: 4px 8px;
+    min-height: 20px;
+    border: none;
+}
+
+QComboBox QAbstractItemView::item:selected {
+    background-color: rgb(136, 197, 228);
+    color: white;
+    border: none;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: rgb(40, 44, 52);
+    color: white;
+}</string>
                    </property>
                    <property name="currentText">
                     <string>Temperature</string>
