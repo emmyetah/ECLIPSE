@@ -76,6 +76,9 @@ MainWindow::MainWindow(QWidget* parent)
         << telemetryTimer_->isActive()
         << "Interval:"
         << telemetryTimer_->interval();
+
+    //adding sim setup to contructor
+    spaceSimSource_ = std::make_unique<eclipse::io::SimTelemetrySource>(config_.spaceSim);
 }
 
 MainWindow::~MainWindow()
@@ -375,29 +378,42 @@ void MainWindow::SetupModeUI()
         {
             logic_.SetMode(eclipse::logic::mode::Mode::Earth);
 
-            //clear metric history when mode swtches
+            //stop space sim, start earth sim (or serial)
+            if (spaceSimSource_ && spaceSimSource_->isOpen())
+                spaceSimSource_->close();
+
+            if (simSource_ && !simSource_->isOpen())
+                simSource_->open();
+
             for (auto& history : metricHistories_)
-            {
                 history.clear();
-            }
+
+            snapshot_ = eclipse::telemetry::TelemetrySnapshot{}; //clear stale space data
 
             ui->earthModePushButton->setChecked(true);
             ui->spaceCapsulePushButton->setChecked(false);
-        });
-
-    //connect Space button
+    });
+    //connect space buttone 
     connect(ui->spaceCapsulePushButton, &QPushButton::clicked, this, [this]()
         {
             logic_.SetMode(eclipse::logic::mode::Mode::Space);
 
+            //stop earth sim and serial, start space sim
+            if (simSource_ && simSource_->isOpen())
+                simSource_->close();
+
+
+            if (spaceSimSource_ && !spaceSimSource_->isOpen())
+                spaceSimSource_->open();
+
             for (auto& history : metricHistories_)
-            {
                 history.clear();
-            }
+
+            snapshot_ = eclipse::telemetry::TelemetrySnapshot{}; //clear stale earth data
 
             ui->earthModePushButton->setChecked(false);
             ui->spaceCapsulePushButton->setChecked(true);
-        });
+    });
 }
 
 eclipse::telemetry::MetricId MainWindow::MetricFromComboIndex(int index) const
@@ -445,12 +461,19 @@ void MainWindow::PollTelemetry()
     qDebug() << "PollTelemetry called";
     
     std::optional<std::string> line;
-  
-    if (serialSource_)
-        line = serialSource_->pollLine();
-
-    if (simSource_)
-        line = simSource_->pollLine();
+ 
+    if (logic_.GetMode() == eclipse::logic::mode::Mode::Space)
+    {
+        if (spaceSimSource_)
+            line = spaceSimSource_->pollLine();
+    }
+    else
+    {
+        if (serialSource_ && serialSource_->isOpen())
+            line = serialSource_->pollLine();
+        else if (simSource_ && simSource_->isOpen())
+            line = simSource_->pollLine();
+    }
 
     qDebug() << "After pollLine call";
     if (line.has_value())

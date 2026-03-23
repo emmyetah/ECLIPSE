@@ -102,6 +102,7 @@ private:
     //telemetry sources
     std::unique_ptr<eclipse::io::SerialTelemetrySource> serialSource_;
     std::unique_ptr<eclipse::io::SimTelemetrySource> simSource_;
+    std::unique_ptr<eclipse::io::SimTelemetrySource> spaceSimSource_;
 
     //trend history for selected metric - updated to store data for every metric continuosly
     std::array<eclipse::viewmodel::DashboardVm::TrendHistory,static_cast<std::size_t>(eclipse::telemetry::MetricId::Count)> metricHistories_{};

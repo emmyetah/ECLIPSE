@@ -38,10 +38,36 @@ namespace eclipse {
         double noiseStd = 0.15;
 
         //space mode (spikiness controls)
-        bool enableSpikes = true;     //if false -> smooth sim only
+        bool enableSpikes = false;     //if false -> smooth sim only
         double spikeChance = 0.05;    //5% chance per tick
         double co2SpikePpm = 800.0;   //add-on spike size
         double radSpikeCpm = 80.0;    //add-on spike size
+
+        static SimTelemetryConfig SpaceDefaults()
+        {
+            SimTelemetryConfig cfg;
+
+            cfg.bmeTempC = 22.0;
+            cfg.scdTempC = 22.0;
+
+            cfg.bmeRhPct = 48.0;
+            cfg.scdRhPct = 47.5;
+
+            cfg.bmePressureHpa = 1013.0;
+
+            cfg.scdCo2Ppm = 800;
+            cfg.co2SpikePpm = 3456;
+
+            cfg.radCpm = 10.0;
+            cfg.radSpikeCpm = 147.0;
+
+            cfg.noiseStd = 0.3;
+
+            cfg.enableSpikes = true;
+            cfg.spikeChance = 0.04;
+            
+            return cfg;
+        }
     };
 
     //bundles everything about telemtry into one object
@@ -62,6 +88,9 @@ namespace eclipse {
 
         // Thresholds
         ThresholdConfig thresholds = ThresholdConfig::defaults();
+
+        //SimTelemetryConfig earthSim;  only using spce simulated data, earth will be normal serial                            
+        SimTelemetryConfig spaceSim = SimTelemetryConfig::SpaceDefaults(); 
 
         static AppConfig defaults() {
             return AppConfig{};
