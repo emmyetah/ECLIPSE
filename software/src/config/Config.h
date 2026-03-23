@@ -41,7 +41,10 @@ namespace eclipse {
         bool enableSpikes = false;     //if false -> smooth sim only
         double spikeChance = 0.05;    //5% chance per tick
         double co2SpikePpm = 800.0;   //add-on spike size
-        double radSpikeCpm = 80.0;    //add-on spike size
+        double radSpikeCpm = 147.0;    //add-on spike size
+        double tempSpikeC = 6.0;
+        double rhSpikePct = 25.0;
+        double pressureSpikeHpa = -40.0;
 
         static SimTelemetryConfig SpaceDefaults()
         {
@@ -49,11 +52,14 @@ namespace eclipse {
 
             cfg.bmeTempC = 22.0;
             cfg.scdTempC = 22.0;
+            cfg.tempSpikeC = 12.0;
 
             cfg.bmeRhPct = 48.0;
             cfg.scdRhPct = 47.5;
+            cfg.rhSpikePct = 47.6;
 
             cfg.bmePressureHpa = 1013.0;
+            cfg.pressureSpikeHpa = -40.0;
 
             cfg.scdCo2Ppm = 800;
             cfg.co2SpikePpm = 3456;
@@ -64,7 +70,7 @@ namespace eclipse {
             cfg.noiseStd = 0.3;
 
             cfg.enableSpikes = true;
-            cfg.spikeChance = 0.04;
+            cfg.spikeChance = 0.03;
             
             return cfg;
         }

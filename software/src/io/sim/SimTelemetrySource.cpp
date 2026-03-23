@@ -75,9 +75,9 @@ namespace eclipse::io
             std::chrono::duration_cast<std::chrono::milliseconds>(now - _start).count();
 
         //Base values from config + jitter
-        const double bmeTempC = _cfg.bmeTempC + noise(); //small jitter
-        const double bmeRh = clamp(_cfg.bmeRhPct + (noise() * 2.0), 0.0, 100.0); //larger jitter, clamp between physical bounds, 0 and 100
-        const double bmePressureHpa = clamp(_cfg.bmePressureHpa + (noise() * 1.5), 900.0, 1100.0); //clamping pressure and adding more noise
+        double bmeTempC = _cfg.bmeTempC + noise(); //small jitter
+        double bmeRh = clamp(_cfg.bmeRhPct + (noise() * 2.0), 0.0, 100.0); //larger jitter, clamp between physical bounds, 0 and 100
+        double bmePressureHpa = clamp(_cfg.bmePressureHpa + (noise() * 1.5), 900.0, 1100.0); //clamping pressure and adding more noise
 
         double scdCo2Ppm = clamp(_cfg.scdCo2Ppm + (noise() * 10.0), 350.0, 5000.0); //preasure fluctuates more noticeablly
         const double scdTempC = _cfg.scdTempC + noise(); //same again for temp, small jitter
@@ -85,12 +85,24 @@ namespace eclipse::io
 
         int64_t radCpm = static_cast<int64_t>(clamp(_cfg.radCpm + (noise() * 3.0), 0.0, 5000.0));
 
-        //Apply “space mode” spikes
+        //Apply “space mode” spikes - SEPERATELY
         if (_cfg.enableSpikes) {
-            if (unitRand() < clamp(_cfg.spikeChance, 0.0, 1.0)) {
+            const double chance = clamp(_cfg.spikeChance, 0.0, 1.0);
+
+            if (unitRand() < chance)
                 scdCo2Ppm = clamp(scdCo2Ppm + _cfg.co2SpikePpm, 350.0, 5000.0);
+
+            if (unitRand() < chance)
                 radCpm = static_cast<int64_t>(clamp((double)radCpm + _cfg.radSpikeCpm, 0.0, 5000.0));
-            }
+
+            if (unitRand() < chance)
+                bmeTempC = clamp(bmeTempC + _cfg.tempSpikeC, -40.0, 85.0);
+
+            if (unitRand() < chance)
+                bmePressureHpa = clamp(bmePressureHpa + _cfg.pressureSpikeHpa, 900.0, 1100.0);
+
+            if (unitRand() < chance)
+                bmeRh = clamp(bmeRh + _cfg.rhSpikePct, 0.0, 100.0);
         }
 
         return formatCsv(
