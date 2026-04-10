@@ -8,6 +8,7 @@
 #include "../telemetry/MetricSpec.h"
 
 #include <QDateTime>
+#include <QElapsedTimer>
 #include <QVBoxLayout>
 #include <chrono>
 #include <QDebug>
@@ -30,7 +31,12 @@ MainWindow::MainWindow(QWidget* parent)
     connect(ui->clearAlertsButton, &QPushButton::clicked, this, [this]() {
         alertsTableWidget_.ClearTable();
         });
-    
+
+    //construct sim source fallback in case of serial crash
+    simSource_ = std::make_unique<eclipse::io::SimTelemetrySource>(
+            config_.telemetry.sim
+        );
+        qDebug() << "Sim source created";
 
     qDebug() << "About to choose telemetry source";
     qDebug() << "Sample period ms:" << config_.samplePeriodMs;
@@ -49,11 +55,6 @@ MainWindow::MainWindow(QWidget* parent)
     }
     else
     {
-        simSource_ = std::make_unique<eclipse::io::SimTelemetrySource>(
-            config_.telemetry.sim
-        );
-        qDebug() << "Sim source created";
-
         simSource_->open();
         qDebug() << "Sim source open called";
     }
@@ -76,6 +77,40 @@ MainWindow::MainWindow(QWidget* parent)
         << telemetryTimer_->isActive()
         << "Interval:"
         << telemetryTimer_->interval();
+
+    serialRetryTimer_ = new QTimer(this);
+    serialRetryTimer_->setInterval(5000); //probe every 5 seconds
+    connect(serialRetryTimer_, &QTimer::timeout, this, [this]()
+        {
+            if (!simFallbackActive_ || !serialSource_)
+                return;
+
+            qDebug() << "Probing serial port...";
+
+            if (serialSource_->isOpen())
+                serialSource_->close();
+
+            bool reopened = serialSource_->open();
+            if (reopened && serialSource_->isOpen())
+            {
+                auto testLine = serialSource_->pollLine();
+                if (!testLine.has_value())
+                {
+                    qDebug() << "Port opened but no data yet, staying in sim";
+                    serialSource_->close();
+                    return; // retry again in 5 seconds
+                }
+
+                qDebug() << "Serial restored - leaving sim fallback";
+                simFallbackActive_ = false;
+                lastValidTelemetryTime_ = std::chrono::steady_clock::now();
+                if (simSource_ && simSource_->isOpen())
+                    simSource_->close();
+                serialRetryTimer_->stop();
+                ui->spaceCapsulePushButton->setChecked(false);
+                ui->earthModePushButton->setChecked(true);
+            }
+        });
 
     //adding sim setup to contructor
     spaceSimSource_ = std::make_unique<eclipse::io::SimTelemetrySource>(config_.spaceSim);
@@ -366,6 +401,9 @@ void MainWindow::ApplyFusedMetricsToSnapshot()
 
 void MainWindow::SetupModeUI()
 {
+    ui->earthModePushButton->setCheckable(true); 
+    ui->spaceCapsulePushButton->setCheckable(true); 
+
     //default mode = Earth
     logic_.SetMode(eclipse::logic::mode::Mode::Earth);
 
@@ -461,6 +499,7 @@ void MainWindow::PollTelemetry()
     qDebug() << "PollTelemetry called";
     
     std::optional<std::string> line;
+    bool lineFromSerial = false;
  
     if (logic_.GetMode() == eclipse::logic::mode::Mode::Space)
     {
@@ -469,10 +508,21 @@ void MainWindow::PollTelemetry()
     }
     else
     {
-        if (serialSource_ && serialSource_->isOpen())
+        if (simFallbackActive_)
+        {
+            if (simSource_ && simSource_->isOpen())
+                line = simSource_->pollLine();
+        }
+        else if (serialSource_ && serialSource_->isOpen())
+        {
             line = serialSource_->pollLine();
+            lineFromSerial = true;
+        }
+
         else if (simSource_ && simSource_->isOpen())
+        {
             line = simSource_->pollLine();
+        }
     }
 
     qDebug() << "After pollLine call";
@@ -481,8 +531,36 @@ void MainWindow::PollTelemetry()
     else
         qDebug() << "No line returned from source";
 
-    if (!line)
-        return;
+    const auto nowTime = std::chrono::steady_clock::now();
+    const auto telemetryTimeout = std::chrono::seconds(5);
+
+    if (!line.has_value()) {
+        if (!simFallbackActive_ && serialSource_ && serialSource_->isOpen()) {
+            if ((nowTime - lastValidTelemetryTime_) > telemetryTimeout && !simFallbackActive_) {
+                qDebug() << "Hardware telemetry timeout - switching to sim mode";
+
+                simFallbackActive_ = true;
+                lineFromSerial = false;
+                serialSource_->close();
+                serialRetryTimer_->start();
+
+                qDebug() << "Entering sim fallback - updating UI";
+                ui->earthModePushButton->setChecked(false);
+                ui->spaceCapsulePushButton->setChecked(true);
+
+                if (simSource_ && !simSource_->isOpen()) {
+                    simSource_->open();
+                }
+
+                line = simSource_->pollLine();
+            }
+        }
+        if (!line.has_value())
+            return;
+    }
+
+    QElapsedTimer e2eTimer;
+    e2eTimer.start();
 
     auto parsed = parser_.parseLine(*line);
 
@@ -501,6 +579,22 @@ void MainWindow::PollTelemetry()
     if (!parsed)
         return;
 
+    if (simFallbackActive_ && lineFromSerial) {
+        qDebug() << "Hardware telemetry restored - switching back to serial";
+
+        simFallbackActive_ = false;
+        serialRetryTimer_->stop();
+        if (simSource_ && simSource_->isOpen())
+            simSource_->close();
+            ui->spaceCapsulePushButton->setChecked(false); 
+            ui->earthModePushButton->setChecked(true);
+        
+    }
+
+    if (lineFromSerial) {
+        lastValidTelemetryTime_ = std::chrono::steady_clock::now();
+    }
+
     for (const auto& sample : *parsed)
     {
         snapshot_.Apply(sample);
@@ -508,15 +602,11 @@ void MainWindow::PollTelemetry()
 
     ApplyFusedMetricsToSnapshot();
 
-    qDebug() << "Temp value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::TempC).has_value();
-    qDebug() << "Humidity value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::HumidityRH).has_value();
-    qDebug() << "Pressure value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::PressureHpa).has_value();
-    qDebug() << "CO2 value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::CO2ppm).has_value();
-    qDebug() << "Radiation value exists:" << snapshot_.Value(eclipse::telemetry::MetricId::RadiationCpm).has_value();
-
     
     auto now = std::chrono::steady_clock::now();
     logic_.Update(snapshot_, now);
+
+
 
     //updted history logic
 
@@ -548,7 +638,12 @@ void MainWindow::PollTelemetry()
     );
 
     RefreshUi();
+
+    qint64 e2eElapsed = e2eTimer.elapsed();
+    qDebug() << "End-to-End Latency (ms):" << e2eElapsed;
+
     MaybeShowAlertDialog();
+
 }
 
 void MainWindow::SetupTrendWindowButtons()
@@ -643,11 +738,18 @@ void MainWindow::RefreshUi()
 
     const auto& trendVm = dashboardVm_.GetTrendPlot();
 
+    QElapsedTimer timer;
+    timer.start();
+
     trendPlot_->SetMetricData(
         QString::fromStdString(trendVm.GetLabel()),
         "Value",
         ConvertTrendHistory(trendVm.GetHistory())
     );
+
+    qint64 elapsed = timer.elapsed();
+    qDebug() << "Trend Chart Render Time (ms):" << elapsed;
+
     setStatusDots();
 }
 
@@ -905,3 +1007,4 @@ void MainWindow::AcknowledgePopupAlert()
     activePopupAlertIndex_.reset();
     lastShownPopupAlertIndex_.reset();
 }
+

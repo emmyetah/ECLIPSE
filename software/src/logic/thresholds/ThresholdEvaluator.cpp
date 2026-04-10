@@ -2,35 +2,34 @@
 
 namespace eclipse::logic::thresholds {
 
-    //takes a value and compares it to the threshold rule.
+    namespace {
+        bool InRange(double value, const ThresholdRange& range) {
+            return value >= range.min && value <= range.max;
+        }
+    }
+
     ThresholdLevel ThresholdEvaluator::Evaluate(
         double value,
         const ThresholdRule& rule
     ) {
-        //check in order of importance
-
-        //check critical range first
-        if (value >= rule.critical.min && value <= rule.critical.max) {
+        // Check most severe band first
+        if (InRange(value, rule.critical)) {
             return ThresholdLevel::Critical;
         }
 
-        //check warning range
-        if (value >= rule.warning.min && value <= rule.warning.max) {
+        if (InRange(value, rule.warning)) {
             return ThresholdLevel::Warning;
         }
 
-        //check caution range
-        if (value >= rule.caution.min && value <= rule.caution.max) {
+        if (InRange(value, rule.caution)) {
             return ThresholdLevel::Caution;
         }
 
-        //check normal range
-        if (value >= rule.normal.min && value <= rule.normal.max) {
+        if (InRange(value, rule.normal)) {
             return ThresholdLevel::Normal;
         }
 
-        //if it does not fall into any defined band treat it as critical
-        return ThresholdLevel::Critical;
+        return ThresholdLevel::Unknown;
     }
 
 }

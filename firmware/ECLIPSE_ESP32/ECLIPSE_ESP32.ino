@@ -8,7 +8,6 @@ void setup() {
     delay(2000); // give serial time to connect
 
     if (!sensorManager.begin()) {
-        // still continue so the Qt app can receive something predictable
     }
 }
 

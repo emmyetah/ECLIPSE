@@ -13,6 +13,8 @@
 #include <set>
 #include <chrono>
 
+
+
 #include "../config/Config.h"
 #include "../io/parsing/TelemetryParser.h"
 #include "../logic/TelemetryLogic.h"
@@ -89,6 +91,11 @@ private:
         const eclipse::viewmodel::DashboardVm::TrendHistory& history
     ) const;
 
+    std::chrono::steady_clock::time_point lastValidTelemetryTime_{};
+    bool simFallbackActive_ = false;
+    QTimer* serialRetryTimer_ = nullptr;
+    
+
     //application config
     eclipse::AppConfig config_ = eclipse::AppConfig::defaults();
 
@@ -157,5 +164,6 @@ private:
     //graph helpers
     eclipse::viewmodel::DashboardVm::TrendHistory& HistoryForMetric(eclipse::telemetry::MetricId metric);
     eclipse::viewmodel::DashboardVm::TrendHistory BuildFilteredHistory(const eclipse::viewmodel::DashboardVm::TrendHistory& source) const;
+
 };
 #endif
